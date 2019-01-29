@@ -13,7 +13,7 @@ import os
 from difflib import SequenceMatcher
 
 
-print("test")
+path = os.getcwd()
 host = "localhost"
 username = "default"
 password = "tomrowbotham"
@@ -292,7 +292,7 @@ class Ui_AdminWindow(object):
         if currentUser.pic == "NULL":
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
         else:
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(currentUser.pic)))
+            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
         self.profilePic.setScaledContents(True)
         self.profilePic.setObjectName(_fromUtf8("profilePic"))
 
@@ -1026,8 +1026,8 @@ class Ui_EditUserWindow(object):
         self.profilePic = QtGui.QLabel(self.centralwidget)
         self.profilePic.setGeometry(QtCore.QRect(30, 10, 126, 126))
         self.profilePic.setText(_fromUtf8(""))
-        if os.path.isfile(self.user.pic):
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(self.user.pic)))
+        if os.path.isfile(path + self.user.pic):
+            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + self.user.pic)))
         else:
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
         self.profilePic.setScaledContents(True)
@@ -1271,7 +1271,7 @@ class Ui_EditUserWindow(object):
         self.dob = self.dob[8:]+"-"+self.dob[5:7]+"-"+self.dob[:4]
         self.email = self.emailEdit.text()
         try:
-            copyfile(self.picture,self.user.pic)
+            copyfile(self.picture,path + self.user.pic)
         except:
             pass
         #c.execute("UPDATE users SET pic = :pictureLocation WHERE username = :username",{"pictureLocation":self.pictureLocation,"username":self.user.username})
@@ -1286,9 +1286,9 @@ class Ui_EditUserWindow(object):
 
     def upload_picture(self):
         self.picture = QtGui.QFileDialog.getOpenFileName(None,"Select Profile Picture","","Images (*png)")
-        self.user.pic = "E:\\nEW DATABASE\\userphotos\\"+self.user.username + ".png"
+        self.user.pic = "\\userphotos\\"+self.user.username + ".png"
         try:
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(self.user.pic)))
+            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + self.user.pic)))
         except FileNotFoundError:
             QtGui.QMessageBox.question(self.window,"Error","Error: File not found",
                                        QtGui.QMessageBox.Ok)
@@ -2093,8 +2093,8 @@ class SearchBox():
         self.type.setText(_translate("SearchUsers", resultType, None))
         self.name.setText(_translate("SearchUsers", firstName + " " + lastName + "(" + username
                                               + ")", None))
-        if os.path.isfile(pic):
-            self.pic.setPixmap(QtGui.QPixmap(_fromUtf8(pic)))
+        if os.path.isfile(path + pic):
+            self.pic.setPixmap(QtGui.QPixmap(_fromUtf8(path + pic)))
 
 
     def hide_all(self):
