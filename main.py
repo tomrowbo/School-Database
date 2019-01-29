@@ -770,13 +770,7 @@ class Ui_CreateClassWindow(object):
         c.execute("INSERT INTO classes VALUES (:yeargroup,:teacher,:subject,:id)",
                   {"yeargroup":self.currentClass.yearGroup,"teacher":self.currentClass.teacher,"subject":self.currentClass.subject,"id":self.currentClass.id})
 
-        print(self.currentClass.id)
-        c.execute("""CREATE TABLE :tablename (
-                   username text,
-                   predictedgrade varchar(2),
-                   cag varchar(2));""",
-                  {"tablename":self.currentClass.id})
-        
+
         conn.commit()
 
         self.window.hide()
@@ -1141,11 +1135,12 @@ class Ui_EditUserWindow(object):
             self.resetPassword.setObjectName(_fromUtf8("resetPassword"))
             self.resetPassword.clicked.connect(self.generate_password)
 
-            self.selectClasses = QtGui.QPushButton(self.centralwidget)
-            self.selectClasses.setGeometry(QtCore.QRect(210, 350+moveY, 121, 57))
-            self.selectClasses.setFont(labelfont)
-            self.selectClasses.setObjectName(_fromUtf8("selectClasses"))
-            self.selectClasses.clicked.connect(self.select_classes)
+            if self.user.type != "Admin":
+                self.selectClasses = QtGui.QPushButton(self.centralwidget)
+                self.selectClasses.setGeometry(QtCore.QRect(210, 350+moveY, 121, 57))
+                self.selectClasses.setFont(labelfont)
+                self.selectClasses.setObjectName(_fromUtf8("selectClasses"))
+                self.selectClasses.clicked.connect(self.select_classes)
             
         ##############################################################
 
@@ -2561,31 +2556,37 @@ class UsersClass():
         self.classPage.show()
 
     def add_student(self):
-        alreadyInserted = False
-        for i in range(len(self.allClasses)):
-            if self.id == self.allClasses[i][0]:
-                alreadyInserted = True
-        if alreadyInserted == False:
-            c.execute("INSERT INTO studentclass VALUES (:username,:id)",{"username":self.username,"id":self.id})
-            conn.commit()
-            QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                       QtGui.QMessageBox.Ok)
-            self.allClasses.append([self.id])
-            self.retranslateUi(self.id,self.subject)
+        choice = QtGui.QMessageBox.question(MainWindow, "Add Student?",
+        "Are you sure you would add the student to this class?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        if choice == QtGui.QMessageBox.Yes:         
+            alreadyInserted = False
+            for i in range(len(self.allClasses)):
+                if self.id == self.allClasses[i][0]:
+                    alreadyInserted = True
+            if alreadyInserted == False:
+                c.execute("INSERT INTO studentclass VALUES (:username,:id)",{"username":self.username,"id":self.id})
+                conn.commit()
+                QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                           QtGui.QMessageBox.Ok)
+                self.allClasses.append([self.id])
+                self.retranslateUi(self.id,self.subject)
 
 
     def remove_student(self):
-        c.execute("DELETE FROM studentclass WHERE student = :username AND lesson = :id",{"username":self.username,"id":self.id})
-        conn.commit()
-        QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                    QtGui.QMessageBox.Ok)
-        try:
-            self.allClasses.remove([self.id])
-        except:
-            pass
-        self.retranslateUi(self.id,self.subject)
-        if self.type == "List":
-            self.hide_all()
+        choice = QtGui.QMessageBox.question(MainWindow, "Remove Student?",
+        "Are you sure you would remove the student from this class?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        if choice == QtGui.QMessageBox.Yes:          
+            c.execute("DELETE FROM studentclass WHERE student = :username AND lesson = :id",{"username":self.username,"id":self.id})
+            conn.commit()
+            QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                        QtGui.QMessageBox.Ok)
+            try:
+                self.allClasses.remove([self.id])
+            except:
+                pass
+            self.retranslateUi(self.id,self.subject)
+            if self.type == "List":
+                self.hide_all()
 
 
     
