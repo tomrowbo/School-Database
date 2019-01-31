@@ -2589,6 +2589,99 @@ class UsersClass():
                 self.hide_all()
 
 
+
+class Ui_HomeWorkWindow(object):
+    def setupUi(self, MainWindow):
+
+        #Creating Main Window
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.resize(640, 480)
+        self.centralwidget = QtGui.QWidget(MainWindow)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+
+        #Save Button
+        self.saveBtn = QtGui.QPushButton(self.centralwidget)
+        self.saveBtn.setGeometry(QtCore.QRect(550, 390, 75, 27))
+        self.saveBtn.setFont(labelfont)
+        self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
+
+        #Full Name Button
+        self.classLabel = QtGui.QLabel(self.centralwidget)
+        self.classLabel.setGeometry(QtCore.QRect(30, 80, 141, 51))
+        self.classLabel.setFont(labelfont)
+        self.classLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.classLabel.setObjectName(_fromUtf8("classLabel"))
+
+        #Class Combo Box
+        self.classCombo = QtGui.QComboBox(self.centralwidget)
+        self.classCombo.setGeometry(QtCore.QRect(180, 90, 351, 31))
+        self.classCombo.setObjectName(_fromUtf8("classCombo"))
+
+        #Edit Homework Label
+        self.editHomeworkLabel = QtGui.QLabel(self.centralwidget)
+        self.editHomeworkLabel.setGeometry(QtCore.QRect(110, 0, 421, 91))
+        self.editHomeworkLabel.setFont(titlefont)
+        self.editHomeworkLabel.setTextFormat(QtCore.Qt.PlainText)
+        self.editHomeworkLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.editHomeworkLabel.setObjectName(_fromUtf8("editHomeworkLabel"))
+
+        #Short Name Label
+        self.dueLabel = QtGui.QLabel(self.centralwidget)
+        self.dueLabel.setGeometry(QtCore.QRect(30, 130, 141, 51))
+        self.dueLabel.setFont(labelfont)
+        self.dueLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.dueLabel.setObjectName(_fromUtf8("dueLabel"))
+
+        #Date Edit
+        self.dateEdit = QtGui.QDateEdit(self.centralwidget)
+        self.dateEdit.setGeometry(QtCore.QRect(180, 140, 351, 31))
+        self.dateEdit.setObjectName(_fromUtf8("dateEdit"))
+
+        #Description Edit
+        self.descriptionEdit = QtGui.QPlainTextEdit(self.centralwidget)
+        self.descriptionEdit.setGeometry(QtCore.QRect(180, 240, 351, 181))
+        self.descriptionEdit.setObjectName(_fromUtf8("descriptionEdit"))
+
+        #Description Label
+        self.descriptionLabel = QtGui.QLabel(self.centralwidget)
+        self.descriptionLabel.setGeometry(QtCore.QRect(30, 230, 141, 51))
+        self.descriptionLabel.setFont(labelfont)
+        self.descriptionLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.descriptionLabel.setObjectName(_fromUtf8("descriptionLabel"))
+
+        #Title Label
+        self.titleLabel = QtGui.QLabel(self.centralwidget)
+        self.titleLabel.setGeometry(QtCore.QRect(30, 180, 141, 51))
+        self.titleLabel.setFont(labelfont)
+        self.titleLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.titleLabel.setObjectName(_fromUtf8("titleLabel"))
+
+        #Title Edit
+        self.titleEdit = QtGui.QLineEdit(self.centralwidget)
+        self.titleEdit.setGeometry(QtCore.QRect(180, 190, 351, 31))
+        self.titleEdit.setObjectName(_fromUtf8("titleEdit"))
+        
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        self.saveBtn.setText(_translate("MainWindow", "Save", None))
+        self.classLabel.setText(_translate("MainWindow", "CLASS:", None))
+        self.editHomeworkLabel.setText(_translate("MainWindow", "EDIT HOMEWORK", None))
+        self.dueLabel.setText(_translate("MainWindow", "DUE DATE:", None))
+        self.descriptionLabel.setText(_translate("MainWindow", "DESCRIPTION:", None))
+        self.titleLabel.setText(_translate("MainWindow", "TITLE:", None))
+
     
 #Use this as MainWindow for the close event popup window
 class EditWindow(QtGui.QMainWindow):
