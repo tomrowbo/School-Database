@@ -53,11 +53,11 @@ labelfont2.setPointSize(16)
 labelfont2.setBold(False)
 labelfont2.setWeight(50)
 
-labelfont3 = QtGui.QFont()
-labelfont3.setFamily(_fromUtf8("Gadugi"))
+labelfont3 = labelfont2
 labelfont3.setPointSize(12)
-labelfont3.setBold(False)
-labelfont3.setWeight(50)
+
+labelfont4 = labelfont2
+labelfont4.setPointSize(10)
 
 titlefont = QtGui.QFont()
 titlefont.setFamily(_fromUtf8("Microsoft New Tai Lue"))
@@ -71,6 +71,13 @@ titlefont2.setPointSize(24)
 titlefont2.setBold(True)
 titlefont2.setWeight(75)
 
+titlefont3 = QtGui.QFont()
+titlefont3.setPointSize(36)
+
+titlefont4 = QtGui.QFont()
+titlefont4.setFamily(_fromUtf8("Quicksand Light"))
+titlefont4.setPointSize(18)
+
 headerfont = QtGui.QFont()
 headerfont.setFamily(_fromUtf8("Gadugi"))
 headerfont.setPointSize(12)
@@ -82,6 +89,7 @@ normalfont.setFamily(_fromUtf8("Gadugi"))
 normalfont.setPointSize(12)
 normalfont.setBold(False)
 normalfont.setWeight(50)
+
 
 regex=QtCore.QRegExp("[a-z-A-Z]+")
 lettersvalidator = QtGui.QRegExpValidator(regex)
