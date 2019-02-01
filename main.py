@@ -274,108 +274,260 @@ class Ui_MainWindow(object):
     def open_admin(self):
         MainWindow.hide()
         self.window = QtGui.QMainWindow()
-        self.ui = Ui_AdminWindow()
+        self.ui = Ui_WelcomeWindow()
         self.ui.setupUi(self.window)
         self.window.show()
 
 
-
-class Ui_AdminWindow(object):
-    def setupUi(self, AdminWindow):
-
+class Ui_WelcomeWindow(object):
+    def setupUi(self, MainWindow):
         #Creating Main Window
-        AdminWindow.setObjectName(_fromUtf8("AdminWindow"))
-        AdminWindow.resize(640, 480)
-        AdminWindow.setAutoFillBackground(False)
-        AdminWindow.setStyleSheet(css)
-        
-        #Central Widget - Contains all buttons and labels
-        self.centralwidget = QtGui.QWidget(AdminWindow)
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.resize(640, 593)
+        MainWindow.setStyleSheet(_fromUtf8("QMainWindow {\n"
+"background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
+"QPushButton{background: transparent;"
+"border: 1px solid black;}"))
+        self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+##
+##        #Profile Picture
+##        self.profilePic = QtGui.QLabel(self.centralwidget)
+##        self.profilePic.setGeometry(QtCore.QRect(80, 10, 126, 126))
+##        self.profilePic.setText(_fromUtf8(""))
+##        if currentUser.pic == "NULL":
+##            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
+##        else:
+##            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
+##        self.profilePic.setScaledContents(True)
+##        self.profilePic.setObjectName(_fromUtf8("profilePic"))
+##
 
-        #Profile Picture
-        self.profilePic = QtGui.QLabel(self.centralwidget)
-        self.profilePic.setGeometry(QtCore.QRect(25, 20, 126, 126))
-        self.profilePic.setText(_fromUtf8(""))
-        if currentUser.pic == "NULL":
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
-        else:
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
-        self.profilePic.setScaledContents(True)
-        self.profilePic.setObjectName(_fromUtf8("profilePic"))
+        #Welcome Label
+        self.welcomeLabel = QtGui.QLabel(self.centralwidget)
+        self.welcomeLabel.setGeometry(QtCore.QRect(220, 0, 341, 141))
+        self.welcomeLabel.setFont(titlefont3)
+        self.welcomeLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.welcomeLabel.setObjectName(_fromUtf8("welcomeLabel"))
 
-        #Welcome Text
-        self.welcome = QtGui.QLabel(self.centralwidget)
-        self.welcome.setGeometry(QtCore.QRect(175, 30, 426, 106))
-        self.welcome.setFont(titlefont2)
-        self.welcome.setTextFormat(QtCore.Qt.PlainText)
-        self.welcome.setObjectName(_fromUtf8("welcome"))
 
-        #General Info Text
-        self.generalInfo = QtGui.QLabel(self.centralwidget)
-        self.generalInfo.setGeometry(QtCore.QRect(28, 160, 176, 41))
-        self.generalInfo.setFont(headerfont)
-        self.generalInfo.setObjectName(_fromUtf8("generalInfo"))
+        #Homework Title - For Teachers and Admins This Will Be Labelled As Notices
+        self.homeworkTitle = QtGui.QLabel(self.centralwidget)
+        self.homeworkTitle.setGeometry(QtCore.QRect(80, 132, 481, 41))
+        self.homeworkTitle.setFont(titlefont4)
+        self.homeworkTitle.setObjectName(_fromUtf8("homeworkTitle"))
 
-        #Rectangle for Welcome Text
-        self.upperRectangle = QtGui.QLabel(self.centralwidget)
-        self.upperRectangle.setGeometry(QtCore.QRect(25, 15, 576, 136))
-        self.upperRectangle.setAutoFillBackground(True)
-        self.upperRectangle.setText(_fromUtf8(""))
-        self.upperRectangle.setObjectName(_fromUtf8("upperRectangle"))
-
-        #Rectangle For General Info
-        self.middleRectangle = QtGui.QLabel(self.centralwidget)
-        self.middleRectangle.setGeometry(QtCore.QRect(25, 166, 576, 111))
-        self.middleRectangle.setAutoFillBackground(True)
-        self.middleRectangle.setText(_fromUtf8(""))
-        self.middleRectangle.setObjectName(_fromUtf8("middleRectangle"))
-
-        #User details text
-        self.userDetails = QtGui.QLabel(self.centralwidget)
-        self.userDetails.setGeometry(QtCore.QRect(28, 190, 551, 86))
-        self.userDetails.setFont(normalfont)
-        self.userDetails.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.userDetails.setObjectName(_fromUtf8("userDetails"))
-
-        #Title for Messages
+        #Message Title
         self.messageTitle = QtGui.QLabel(self.centralwidget)
-        self.messageTitle.setGeometry(QtCore.QRect(30, 290, 176, 41))
-        self.messageTitle.setFont(headerfont)
+        self.messageTitle.setGeometry(QtCore.QRect(80, 330, 481, 41))
+        self.messageTitle.setFont(titlefont4)
         self.messageTitle.setObjectName(_fromUtf8("messageTitle"))
 
-        #Rectangle for activity log
-        self.lowerRectangle = QtGui.QLabel(self.centralwidget)
-        self.lowerRectangle.setGeometry(QtCore.QRect(27, 297, 576, 111))
-        self.lowerRectangle.setAutoFillBackground(True)
-        self.lowerRectangle.setText(_fromUtf8(""))
-        self.lowerRectangle.setObjectName(_fromUtf8("lowerRectangle"))
+        #View Homework/Notices Button
+        self.viewButton = QtGui.QPushButton(self.centralwidget)
+        self.viewButton.setGeometry(QtCore.QRect(460, 330, 111, 23))
+        font = QtGui.QFont()
+        font.setUnderline(True)
+        self.viewButton.setFont(font)
+        self.viewButton.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.viewButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+"color: rgb(0, 0, 255);\n"
+"text-decoration: underline;\n"
+"border: 0px;}"))
+        self.viewButton.setObjectName(_fromUtf8("viewButton"))
 
-        #Log Details text
-        self.messageDetails = QtGui.QLabel(self.centralwidget)
-        self.messageDetails.setGeometry(QtCore.QRect(30, 320, 551, 86))
-        self.messageDetails.setFont(normalfont)
-        self.messageDetails.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.messageDetails.setObjectName(_fromUtf8("logDetails"))
+        #View Messages Button
+        self.viewButton_2 = QtGui.QPushButton(self.centralwidget)
+        self.viewButton_2.setGeometry(QtCore.QRect(460, 528, 111, 23))
+        self.viewButton_2.setFont(font)
+        self.viewButton_2.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+"color: rgb(0, 0, 255);\n"
+"text-decoration: underline;\n"
+"border: 0px;}"))
+        self.viewButton_2.setObjectName(_fromUtf8("viewButton_2"))
 
-        #Sending some objects to the back and forwards i.e. to put text infront of rectangles
-        self.lowerRectangle.raise_()
-        self.middleRectangle.raise_()
-        self.upperRectangle.raise_()
-        self.profilePic.raise_()
-        self.welcome.raise_()
-        self.generalInfo.raise_()
-        self.userDetails.raise_()
+
+        ##TOP RESULTS
+
+        ## RESULT ONE
+        
+        #Top button
+        self.topButton = QtGui.QPushButton(self.centralwidget)
+        self.topButton.setGeometry(QtCore.QRect(80, 180, 481, 51))
+        self.topButton.setText(_fromUtf8(""))
+        self.topButton.setObjectName(_fromUtf8("topButton"))
+
+        #Result 1 Title
+        self.topTitle = QtGui.QLabel(self.centralwidget)
+        self.topTitle.setGeometry(QtCore.QRect(90, 187, 461, 21))
+        self.topTitle.setFont(labelfont3)
+        self.topTitle.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle.setObjectName(_fromUtf8("topTitle"))
+
+        #Result 1 Description
+        self.topDesc = QtGui.QLabel(self.centralwidget)
+        self.topDesc.setGeometry(QtCore.QRect(90, 207, 461, 21))
+        self.topDesc.setFont(labelfont4)
+        self.topDesc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc.setObjectName(_fromUtf8("topDesc"))
+
+        self.top1 = WindowButtons(self.topButton,self.topTitle,self.topDesc)
+
+
+        ## RESULT TWO
+        
+        self.topTitle_2 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_2.setGeometry(QtCore.QRect(90, 237, 461, 21))
+        self.topTitle_2.setFont(labelfont3)
+        self.topTitle_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_2.setObjectName(_fromUtf8("topTitle_2"))
+        
+        self.topDesc_2 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_2.setGeometry(QtCore.QRect(90, 257, 461, 21))
+        self.topDesc_2.setFont(labelfont4)
+        self.topDesc_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_2.setObjectName(_fromUtf8("topDesc_2"))
+
+        self.topButton_2 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_2.setGeometry(QtCore.QRect(80, 230, 481, 51))
+        self.topButton_2.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+        "border: 1px solid black;}"))
+        self.topButton_2.setText(_fromUtf8(""))
+        self.topButton_2.setObjectName(_fromUtf8("topButton_2"))
+
+        self.top2 = WindowButtons(self.topButton_2,self.topTitle_2,self.topDesc_2)
+
+        ##RESULT THREE
+        self.topTitle_3 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_3.setGeometry(QtCore.QRect(90, 287, 461, 21))
+        self.topTitle_3.setFont(labelfont3)
+        self.topTitle_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_3.setObjectName(_fromUtf8("topTitle_3"))
+        
+        self.topDesc_3 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_3.setGeometry(QtCore.QRect(90, 307, 461, 21))
+        self.topDesc_3.setFont(labelfont4)
+        self.topDesc_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_3.setObjectName(_fromUtf8("topDesc_3"))
+        
+        self.topButton_3 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_3.setGeometry(QtCore.QRect(80, 280, 481, 51))
+        self.topButton_3.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+"border: 1px solid black;}"))
+        self.topButton_3.setText(_fromUtf8(""))
+        self.topButton_3.setObjectName(_fromUtf8("topButton_3"))
+
+        self.top3 = WindowButtons(self.topButton_3,self.topTitle_3,self.topDesc_3)
+
+
+        ## BOTTOM RESULTS
+
+        ## RESULT ONE
+        self.bottomTitle = QtGui.QLabel(self.centralwidget)
+        self.bottomTitle.setGeometry(QtCore.QRect(90, 385, 461, 21))
+        self.bottomTitle.setFont(labelfont3)
+        self.bottomTitle.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.bottomTitle.setObjectName(_fromUtf8("bottomTitle"))
+        
+        self.bottomDesc = QtGui.QLabel(self.centralwidget)
+        self.bottomDesc.setGeometry(QtCore.QRect(90, 405, 461, 21))
+        self.bottomDesc.setFont(labelfont4)
+        self.bottomDesc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.bottomDesc.setObjectName(_fromUtf8("bottomDesc"))
+
+        self.bottomButton = QtGui.QPushButton(self.centralwidget)
+        self.bottomButton.setGeometry(QtCore.QRect(80, 378, 481, 51))
+        self.bottomButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+        "border: 1px solid black;}"))
+        self.bottomButton.setText(_fromUtf8(""))
+        self.bottomButton.setObjectName(_fromUtf8("bottomButton"))
+
+        self.bottom1 = WindowButtons(self.bottomButton,self.bottomTitle,self.bottomDesc)
+
+        ## RESULT 2
+        self.bottomDesc_2 = QtGui.QLabel(self.centralwidget)
+        self.bottomDesc_2.setGeometry(QtCore.QRect(90, 455, 461, 21))
+        self.bottomDesc_2.setFont(labelfont4)
+        self.bottomDesc_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.bottomDesc_2.setObjectName(_fromUtf8("bottomDesc_2"))
+        
+        self.bottomButton_2 = QtGui.QPushButton(self.centralwidget)
+        self.bottomButton_2.setGeometry(QtCore.QRect(80, 428, 481, 51))
+        self.bottomButton_2.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+"border: 1px solid black;}"))
+        self.bottomButton_2.setText(_fromUtf8(""))
+        self.bottomButton_2.setObjectName(_fromUtf8("bottomButton_2"))
+        
+        self.bottomTitle_2 = QtGui.QLabel(self.centralwidget)
+        self.bottomTitle_2.setGeometry(QtCore.QRect(90, 435, 461, 21))
+        self.bottomTitle_2.setFont(labelfont3)
+        self.bottomTitle_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.bottomTitle_2.setObjectName(_fromUtf8("bottomTitle_2"))
+
+        self.bottom2 = WindowButtons(self.bottomButton_2,self.bottomTitle_2,self.bottomDesc_2)
+
+        ## RESULT THREE
+        self.bottomTitle_3 = QtGui.QLabel(self.centralwidget)
+        self.bottomTitle_3.setGeometry(QtCore.QRect(90, 485, 461, 21))
+        self.bottomTitle_3.setFont(labelfont3)
+        self.bottomTitle_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.bottomTitle_3.setObjectName(_fromUtf8("bottomTitle_3"))
+        
+        self.bottomDesc_3 = QtGui.QLabel(self.centralwidget)
+        self.bottomDesc_3.setGeometry(QtCore.QRect(90, 505, 461, 21))
+        self.bottomDesc_3.setFont(labelfont4)
+        self.bottomDesc_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.bottomDesc_3.setObjectName(_fromUtf8("bottomDesc_3"))
+        
+        self.bottomButton_3 = QtGui.QPushButton(self.centralwidget)
+        self.bottomButton_3.setGeometry(QtCore.QRect(80, 478, 481, 51))
+        self.bottomButton_3.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+        "border: 1px solid black;}"))
+        self.bottomButton_3.setText(_fromUtf8(""))
+        self.bottomButton_3.setObjectName(_fromUtf8("bottomButton_3"))
+
+        self.bottom3 = WindowButtons(self.bottomButton_3,self.bottomTitle_3,self.bottomDesc_3)
+
+        #Sorting out alignment
+#        self.profilePic.raise_()
+        self.welcomeLabel.raise_()
+        self.homeworkTitle.raise_()
         self.messageTitle.raise_()
-        self.messageDetails.raise_()
+        self.viewButton.raise_()
+        self.viewButton_2.raise_()
+        self.topTitle.raise_()
+        self.topDesc.raise_()
+        self.topTitle_2.raise_()
+        self.topDesc_2.raise_()
+        self.topTitle_3.raise_()
+        self.topDesc_3.raise_()
+        self.bottomDesc_2.raise_()
+        self.bottomTitle_2.raise_()
+        self.bottomTitle.raise_()
+        self.bottomDesc.raise_()
+        self.bottomTitle_3.raise_()
+        self.bottomDesc_3.raise_()
+        self.topButton.raise_()
+        self.topButton_2.raise_()
+        self.topButton_3.raise_()
+        self.bottomButton.raise_()
+        self.bottomButton_2.raise_()
+        self.bottomButton_3.raise_()
+
 
         
-        AdminWindow.setCentralWidget(self.centralwidget)
-
-        #Setting Menu Bar
-        self.menubar = QtGui.QMenuBar(AdminWindow)
+##        #Setting Menu Bar
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+
+
+
+        
+
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
         self.menuSubjects = QtGui.QMenu(self.menubar)
@@ -383,25 +535,21 @@ class Ui_AdminWindow(object):
         self.menuClasses = QtGui.QMenu(self.menubar)
         self.menuClasses.setObjectName(_fromUtf8("menuClasses"))
         self.menuUsers = QtGui.QMenu(self.menubar)
-        self.menuUsers.setObjectName(_fromUtf8("menuUsers"))
-        AdminWindow.setMenuBar(self.menubar)
+        self.menuUsers.setObjectName(_fromUtf8("menuUsers"))       
+        MainWindow.setMenuBar(self.menubar)
+        MainWindow.setStatusBar(self.statusbar)
 
-        #Setting status bar
-        self.statusBar = QtGui.QStatusBar(AdminWindow)
-        self.statusBar.setObjectName(_fromUtf8("statusBar"))
-        AdminWindow.setStatusBar(self.statusBar)
-
-        #Adding to the bars
+         #Adding to the bars
 
         #Quit
-        self.actionQuit = QtGui.QAction(AdminWindow)
+        self.actionQuit = QtGui.QAction(MainWindow)
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
         self.actionQuit.setShortcut("Ctrl+Q")
         self.actionQuit.setStatusTip("Leave The App")
         self.actionQuit.triggered.connect(self.close_app)
 
         #Log Out
-        self.actionLogOut = QtGui.QAction(AdminWindow)
+        self.actionLogOut = QtGui.QAction(MainWindow)
         self.actionLogOut.setObjectName(_fromUtf8("actionLogOut"))
         self.actionLogOut.setShortcut("Ctrl+L")
         self.actionLogOut.setStatusTip("Sign Out Of Your Account")
@@ -409,37 +557,37 @@ class Ui_AdminWindow(object):
 
 
         #View Users
-        self.viewUsers = QtGui.QAction(AdminWindow)
+        self.viewUsers = QtGui.QAction(MainWindow)
         self.viewUsers.setObjectName(_fromUtf8("viewUsers"))
         self.viewUsers.setStatusTip("View Users")
         self.viewUsers.triggered.connect(self.view_users)        
 
         #Add Class
-        self.addClass = QtGui.QAction(AdminWindow)
+        self.addClass = QtGui.QAction(MainWindow)
         self.addClass.setObjectName(_fromUtf8("addClass"))
         self.addClass.setStatusTip("Create a new class")
         self.addClass.triggered.connect(self.create_class)
 
         #Add Subject
-        self.addSubject = QtGui.QAction(AdminWindow)
+        self.addSubject = QtGui.QAction(MainWindow)
         self.addSubject.setObjectName(_fromUtf8("addSubject"))
         self.addSubject.setStatusTip("Create a new subject")
         self.addSubject.triggered.connect(self.create_subject)
 
         #Add Admin
-        self.addAdmin = QtGui.QAction(AdminWindow)
+        self.addAdmin = QtGui.QAction(MainWindow)
         self.addAdmin.setObjectName(_fromUtf8("addAdmin"))
         self.addAdmin.setStatusTip("Create a new Admin account")
         self.addAdmin.triggered.connect(self.create_admin)
 
         #Add Teacher
-        self.addTeacher = QtGui.QAction(AdminWindow)
+        self.addTeacher = QtGui.QAction(MainWindow)
         self.addTeacher.setObjectName(_fromUtf8("addTeacher"))
         self.addTeacher.setStatusTip("Create a new Teacher account")
         self.addTeacher.triggered.connect(self.create_teacher)
 
         #Add Student
-        self.addStudent = QtGui.QAction(AdminWindow)
+        self.addStudent = QtGui.QAction(MainWindow)
         self.addStudent.setObjectName(_fromUtf8("addStudent"))
         self.addStudent.setStatusTip("Create a new student account")
         self.addStudent.triggered.connect(self.create_student)
@@ -459,35 +607,29 @@ class Ui_AdminWindow(object):
         self.menubar.addAction(self.menuClasses.menuAction())
         self.menubar.addAction(self.menuUsers.menuAction())
 
-        self.retranslateUi(AdminWindow)
-        QtCore.QMetaObject.connectSlotsByName(AdminWindow)
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    def retranslateUi(self, AdminWindow):
-        AdminWindow.setWindowTitle(_translate("AdminWindow", "Robert Smyth Admin Application", None))
-        AdminWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
-        self.welcome.setText(_translate("AdminWindow", "Welcome Back \n"
-    + currentUser.first + " " + currentUser.last + "!", None))
-        self.generalInfo.setText(_translate("AdminWindow", "General information", None))
-        self.userDetails.setText(_translate("AdminWindow", "Email: "+currentUser.email+"\n"
-    "DOB: "+str(currentUser.dob)+"\n", None))
-        self.messageTitle.setText(_translate("AdminWindow", "Messages (X unread)", None))
-        self.messageDetails.setText(_translate("AdminWindow", "Line One\n"
-    "Line Two\n"
-    "Line Three\n"
-    "Line Four", None))
-        self.window = AdminWindow
-        self.menuFile.setTitle(_translate("AdminWindow", "File", None))
-        self.menuSubjects.setTitle(_translate("AdminWindow", "Subjects", None))
-        self.menuClasses.setTitle(_translate("AdminWindow", "Classes", None))
-        self.menuUsers.setTitle(_translate("AdminWindow", "Users", None))
-        self.viewUsers.setText(_translate("AdminWindow","View Users",None))
-        self.addClass.setText(_translate("AdminWindow","Add Class",None))
-        self.addSubject.setText(_translate("AdminWindow","Add Subject",None))
-        self.addTeacher.setText(_translate("AdminWindow","Add Teacher",None))
-        self.addStudent.setText(_translate("AdminWindow","Add Student",None))
-        self.addAdmin.setText(_translate("AdminWindow","Add Admin",None))
-        self.actionQuit.setText(_translate("AdminWindow", "Quit Application", None))
-        self.actionLogOut.setText(_translate("AdminWindow", "Log Out", None))
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(_translate("MainWindow", "Test", None))
+        self.welcomeLabel.setText(_translate("MainWindow", "Welcome back,\n"
+"Tom!", None))
+        self.homeworkTitle.setText(_translate("MainWindow", "My Homework: (5 Due Soon)", None))
+        self.messageTitle.setText(_translate("MainWindow", "My Messages: (17 Unread)", None))
+        self.viewButton.setText(_translate("MainWindow", "Click to view more", None))
+        self.viewButton_2.setText(_translate("MainWindow", "Click to view more", None))
+        self.menuFile.setTitle(_translate("MainWindow", "File", None))
+        self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
+        self.menuClasses.setTitle(_translate("MainWindow", "Classes", None))
+        self.menuUsers.setTitle(_translate("MainWindow", "Users", None))
+        self.viewUsers.setText(_translate("MainWindow","View Users",None))
+        self.addClass.setText(_translate("MainWindow","Add Class",None))
+        self.addSubject.setText(_translate("MainWindow","Add Subject",None))
+        self.addTeacher.setText(_translate("MainWindow","Add Teacher",None))
+        self.addStudent.setText(_translate("MainWindow","Add Student",None))
+        self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
+        self.actionQuit.setText(_translate("MainWindow", "Quit Application", None))
+        self.actionLogOut.setText(_translate("MainWindow", "Log Out", None))
 
     def view_users(self):
         self.viewUserPage = EditWindow()
@@ -542,6 +684,18 @@ class Ui_AdminWindow(object):
         MainWindow.show()
         ui.usernameEdit.clear()
         ui.passwordEdit.clear()
+
+
+class WindowButtons():
+    def __init__(self,button,title,desc):
+        self.button = button
+        self.title = title
+        self.desc = desc
+
+    def retranslateUi(self,title,desc):
+        self.title.setText(_translate("MainWindow",title,None))
+        self.desc.setText(_translate("MainWindow",desc,None))
+
 
 
 
