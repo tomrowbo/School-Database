@@ -750,6 +750,7 @@ class Ui_CreateClassWindow(object):
         self.lesson4Label.setText(_translate("CreateClassWindow", "LESSON 4", None))
         self.yearLabel.setText(_translate("CreateClassWindow", "YEAR GROUP", None))
         self.idLabel.setText(_translate("CreateClassWindow", "CLASS ID", None))
+        CreateClassWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         
 
     def create_(self):
@@ -935,7 +936,8 @@ class Ui_EditSubjectWindow(object):
             self.editSubjectLabel.setText(_translate("EditSubjectWindow", "EDIT SUBJECT", None))
         self.fullNameLabel.setText(_translate("EditSubjectWindow", "FULL NAME", None))
         self.shortNameLabel.setText(_translate("EditSubjectWindow", "SHORT NAME", None))
-        self.headOfSubjectLabel.setText(_translate("EditSubjectWindow", "HEAD OF SUBJECT", None))     
+        self.headOfSubjectLabel.setText(_translate("EditSubjectWindow", "HEAD OF SUBJECT", None))
+        EditSubjectWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
 
 
 
@@ -1215,6 +1217,7 @@ class Ui_EditUserWindow(object):
 
         
         self.dateLabel.setText(_translate("EditUserWindow", "DATE OF BIRTH", None))
+        EditUserWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         self.lastLabel.setText(_translate("EditUserWindow", "LAST NAME", None))
         self.usernameLabel.setText(_translate("EditUserWindow", "USERNAME", None))
         self.emailLabel.setText(_translate("EditUserWindow", "EMAIL", None))
@@ -1926,7 +1929,7 @@ class Ui_SearchUsers(object):
 
 
                     
-        self.window.setWindowTitle(_translate("SearchUsers", "MainWindow", None))
+        self.window.setWindowTitle(_translate("SearchUsers", "Search User Window", None))
         self.titleLabel.setText(_translate("SearchUsers", "SEARCH USERS", None))
         self.nameLabel.setText(_translate("SearchUsers", "FULL NAME", None))
         self.dobCheck.setText(_translate("SearchUsers", "Filter by date of birth?", None))
@@ -1941,6 +1944,7 @@ class Ui_SearchUsers(object):
         self.amountLabel.setText(_translate("SearchUsers", str(len(self.data)) + " Results (" + str((len(self.data)+1)//7 )+ " Pages)", None))
         self.pageNumber.setText(_translate("SearchUsers", str(self.page), None))
         self.previousButton.setText(_translate("SearchUsers", "Previous", None))
+        self.window.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         if self.page == 1:
             self.previousButton.setEnabled(False)
         else:
@@ -2382,6 +2386,7 @@ class Ui_ClassListWindow(object):
 
     def retranslateUi(self, ClassListWindow):
         self.search()
+        ClassListWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         if len(self.data) >= 1+((self.page-1)*8):
             self.class1.retranslateUi(self.data[0+(self.page-1)*8][3],self.data[0+(self.page-1)*8][2])
             self.class1.show_all()
@@ -2430,7 +2435,7 @@ class Ui_ClassListWindow(object):
         else:
             self.class8.hide_all()
             
-        ClassListWindow.setWindowTitle(_translate("ClassListWindow", "MainWindow", None))
+        ClassListWindow.setWindowTitle(_translate("ClassListWindow", "Classes Window", None))
         if self.typeOfSearch == "Search":            
             self.titleLabel.setText(_translate("ClassListWindow", "CLASSES", None))
             self.subjectLabel.setText(_translate("ClassListWindow", "Subject:", None))
@@ -2483,7 +2488,7 @@ class Ui_ClassListWindow(object):
             data = c.fetchall()
 
             
-        print(data)
+        
         self.data = []
         for i in range(len(data)):
             self.data.append(list(data[i]))
@@ -2682,13 +2687,14 @@ class Ui_HomeWorkWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Edit Homework Window", None))
         self.saveBtn.setText(_translate("MainWindow", "Save", None))
         self.classLabel.setText(_translate("MainWindow", "CLASS:", None))
         self.editHomeworkLabel.setText(_translate("MainWindow", "EDIT HOMEWORK", None))
         self.dueLabel.setText(_translate("MainWindow", "DUE DATE:", None))
         self.descriptionLabel.setText(_translate("MainWindow", "DESCRIPTION:", None))
         self.titleLabel.setText(_translate("MainWindow", "TITLE:", None))
+        MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
 
     
 #Use this as MainWindow for the close event popup window
