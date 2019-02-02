@@ -11,6 +11,7 @@ import string
 from shutil import copyfile
 import os
 from difflib import SequenceMatcher
+from zxcvbvn import zxcvbn
 
 
 path = os.getcwd()
@@ -602,10 +603,16 @@ class Ui_WelcomeWindow(object):
         self.addStudent.setStatusTip("Create a new student account")
         self.addStudent.triggered.connect(self.create_student)
 
+        self.resetPassword = QtGui.QAction(MainWindow)
+        self.resetPassword.setObjectName(_fromUtf8("resetPassword"))
+        self.resetPassword.setStatusTip("Change your password.")
+        self.resetPassword.triggered.connect(self.reset_password)
+
         
         #Add actions onto menu
         self.menuFile.addAction(self.actionLogOut)
         self.menuFile.addAction(self.actionQuit)
+        self.menuFile.addAction(self.resetPassword)
         self.menubar.addAction(self.menuFile.menuAction())
         
         if currentUser.type != "Student":
@@ -645,6 +652,7 @@ class Ui_WelcomeWindow(object):
         self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
         self.actionQuit.setText(_translate("MainWindow", "Quit Application", None))
         self.actionLogOut.setText(_translate("MainWindow", "Log Out", None))
+        self.resetPassword.setText(_translate("MainWindow","Reset Password",None))
         MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
 
     def view_users(self):
@@ -701,6 +709,12 @@ class Ui_WelcomeWindow(object):
         ui.usernameEdit.clear()
         ui.passwordEdit.clear()
 
+    def reset_password(self):
+        self.passwordPage = EditWindow()
+        self.passwordUi = Ui_PasswordWindow()
+        self.passwordUi.setupUi(self.passwordPage)
+        self.passwordPage.show()
+
 
 class WindowButtons():
     def __init__(self,button,title,desc):
@@ -712,7 +726,113 @@ class WindowButtons():
         self.title.setText(_translate("MainWindow",title,None))
         self.desc.setText(_translate("MainWindow",desc,None))
 
+class Ui_PasswordWindow(object):
+    def setupUi(self, MainWindow):
 
+        #Creating Window
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.resize(640, 480)
+        self.centralwidget = QtGui.QWidget(MainWindow)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+
+        #Title
+        self.resetPasswordLabel = QtGui.QLabel(self.centralwidget)
+        self.resetPasswordLabel.setGeometry(QtCore.QRect(110, 60, 421, 91))
+        self.resetPasswordLabel.setFont(titlefont)
+        self.resetPasswordLabel.setTextFormat(QtCore.Qt.PlainText)
+        self.resetPasswordLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.resetPasswordLabel.setObjectName(_fromUtf8("resetPasswordLabel"))
+
+        #Old Password Edit
+        self.oldEdit = QtGui.QLineEdit(self.centralwidget)
+        self.oldEdit.setGeometry(QtCore.QRect(210, 150, 351, 31))
+        self.oldEdit.setObjectName(_fromUtf8("oldEdit"))
+        self.oldEdit.setEchoMode(QtGui.QLineEdit.Password)
+
+        #Old Password Label
+        self.oldLabel = QtGui.QLabel(self.centralwidget)
+        self.oldLabel.setGeometry(QtCore.QRect(60, 140, 141, 51))
+        self.oldLabel.setFont(labelfont)
+        self.oldLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.oldLabel.setObjectName(_fromUtf8("oldLabel"))
+
+        #New Password Edit
+        self.newEdit = QtGui.QLineEdit(self.centralwidget)
+        self.newEdit.setGeometry(QtCore.QRect(210, 200, 351, 31))
+        self.newEdit.setObjectName(_fromUtf8("newEdit"))
+        self.newEdit.setEchoMode(QtGui.QLineEdit.Password)
+
+        #New Password Label 
+        self.newLabel = QtGui.QLabel(self.centralwidget)
+        self.newLabel.setGeometry(QtCore.QRect(60, 190, 141, 51))
+        self.newLabel.setFont(labelfont)
+        self.newLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.newLabel.setObjectName(_fromUtf8("newLabel"))
+
+        #Confirm Password Edit
+        self.confirmEdit = QtGui.QLineEdit(self.centralwidget)
+        self.confirmEdit.setGeometry(QtCore.QRect(210, 250, 351, 31))
+        self.confirmEdit.setObjectName(_fromUtf8("confirmEdit"))
+        self.confirmEdit.setEchoMode(QtGui.QLineEdit.Password)
+
+        #Confirm Password Label
+        self.confirmLabel = QtGui.QLabel(self.centralwidget)
+        self.confirmLabel.setGeometry(QtCore.QRect(30, 240, 171, 51))
+        self.confirmLabel.setFont(labelfont)
+        self.confirmLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.confirmLabel.setObjectName(_fromUtf8("confirmLabel"))
+
+        #Save Button
+        self.saveBtn = QtGui.QPushButton(self.centralwidget)
+        self.saveBtn.setGeometry(QtCore.QRect(486, 300, 75, 27))
+        self.saveBtn.setFont(labelfont)
+        self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
+
+
+        
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        self.resetPasswordLabel.setText(_translate("MainWindow", "RESET PASSWORD", None))
+        self.oldLabel.setText(_translate("MainWindow", "OLD PASSWORD:", None))
+        self.newLabel.setText(_translate("MainWindow", "NEW PASSWORD:", None))
+        self.confirmLabel.setText(_translate("MainWindow", "CONFIRM PASSWORD:", None))
+        self.saveBtn.setText(_translate("MainWindow", "Save", None))
+
+    def change_pass(self):
+        old = self.oldEdit.text()
+        old = hashing(old)
+        if currentUser.password == old:
+            new = self.newEdit.text()
+            if new == self.confirmEdit.text():
+                strength = zxcvbn(new,[currentUser.first,currentUser.last,currentUser.dob])["score"]
+                if strength > 2:
+                    currentUser.password = hashing(new)
+                    c.execute("UPDATE users SET password = :password WHERE username =:username",
+                              {"password":currentUser.password,"username":currentUser.username})
+                    conn.commit()
+                    return
+                QtGui.QMessageBox.question(self.window,"Error","Error: Your password is too weak and could be guessed easy. Please try use a more complex password.",
+                                            QtGui.QMessageBox.Ok)
+                return
+            QtGui.QMessageBox.question(self.window,"Error","Error: Passwords did not match.",
+                                        QtGui.QMessageBox.Ok)
+            return
+        QtGui.QMessageBox.question(self.window,"Error","Error: Incorrect password.",
+                                    QtGui.QMessageBox.Ok)
+            
+            
 
 
 class Ui_CreateClassWindow(object):
