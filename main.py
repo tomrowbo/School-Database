@@ -11,7 +11,7 @@ import string
 from shutil import copyfile
 import os
 from difflib import SequenceMatcher
-from zxcvbvn import zxcvbn
+from zxcvbn import zxcvbn
 
 
 path = os.getcwd()
@@ -291,6 +291,7 @@ class Ui_MainWindow(object):
 
 class Ui_WelcomeWindow(object):
     def setupUi(self, MainWindow):
+        self.window = MainWindow
         #Creating Main Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(640, 593)
@@ -728,7 +729,7 @@ class WindowButtons():
 
 class Ui_PasswordWindow(object):
     def setupUi(self, MainWindow):
-
+        self.window = MainWindow
         #Creating Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(640, 480)
@@ -787,6 +788,7 @@ class Ui_PasswordWindow(object):
         self.saveBtn.setGeometry(QtCore.QRect(486, 300, 75, 27))
         self.saveBtn.setFont(labelfont)
         self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
+        self.saveBtn.clicked.connect(self.change_pass)
 
 
         
