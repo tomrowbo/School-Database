@@ -53,10 +53,18 @@ labelfont2.setPointSize(16)
 labelfont2.setBold(False)
 labelfont2.setWeight(50)
 
-labelfont3 = labelfont2
+labelfont3 = QtGui.QFont()
+labelfont3.setFamily(_fromUtf8("Gadugi"))
+labelfont3.setPointSize(16)
+labelfont3.setBold(False)
+labelfont3.setWeight(50)
 labelfont3.setPointSize(12)
 
-labelfont4 = labelfont2
+labelfont4 = QtGui.QFont()
+labelfont4.setFamily(_fromUtf8("Gadugi"))
+labelfont4.setPointSize(16)
+labelfont4.setBold(False)
+labelfont4.setWeight(50)
 labelfont4.setPointSize(10)
 
 titlefont = QtGui.QFont()
@@ -264,19 +272,20 @@ class Ui_MainWindow(object):
                 currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8])
             else:   
                 currentUser = User(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
-                if currentUser.type == "Admin":                   
-                    self.open_admin()
+                self.open_user()
                 
                     
                 #MainWindow.hide()
                 
 
-    def open_admin(self):
+    def open_user(self):
         MainWindow.hide()
         self.window = QtGui.QMainWindow()
         self.ui = Ui_WelcomeWindow()
         self.ui.setupUi(self.window)
         self.window.show()
+
+
 
 
 class Ui_WelcomeWindow(object):
@@ -290,18 +299,19 @@ class Ui_WelcomeWindow(object):
 "border: 1px solid black;}"))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-##
-##        #Profile Picture
-##        self.profilePic = QtGui.QLabel(self.centralwidget)
-##        self.profilePic.setGeometry(QtCore.QRect(80, 10, 126, 126))
-##        self.profilePic.setText(_fromUtf8(""))
-##        if currentUser.pic == "NULL":
-##            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
-##        else:
-##            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
-##        self.profilePic.setScaledContents(True)
-##        self.profilePic.setObjectName(_fromUtf8("profilePic"))
-##
+
+        #Profile Picture
+        self.profilePic = QtGui.QLabel(self.centralwidget)
+        self.profilePic.setGeometry(QtCore.QRect(80, 10, 126, 126))
+        self.profilePic.setText(_fromUtf8(""))
+        if os.path.isfile(path + currentUser.pic):
+            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
+        else:
+            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
+            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
+        self.profilePic.setScaledContents(True)
+        self.profilePic.setObjectName(_fromUtf8("profilePic"))
+
 
         #Welcome Label
         self.welcomeLabel = QtGui.QLabel(self.centralwidget)
@@ -524,9 +534,7 @@ class Ui_WelcomeWindow(object):
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
 
-
-
-        
+       
 
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -541,6 +549,13 @@ class Ui_WelcomeWindow(object):
 
          #Adding to the bars
 
+        #Log Out
+        self.actionLogOut = QtGui.QAction(MainWindow)
+        self.actionLogOut.setObjectName(_fromUtf8("actionLogOut"))
+        self.actionLogOut.setShortcut("Ctrl+L")
+        self.actionLogOut.setStatusTip("Sign Out Of Your Account")
+        self.actionLogOut.triggered.connect(self.log_out)
+
         #Quit
         self.actionQuit = QtGui.QAction(MainWindow)
         self.actionQuit.setObjectName(_fromUtf8("actionQuit"))
@@ -548,12 +563,7 @@ class Ui_WelcomeWindow(object):
         self.actionQuit.setStatusTip("Leave The App")
         self.actionQuit.triggered.connect(self.close_app)
 
-        #Log Out
-        self.actionLogOut = QtGui.QAction(MainWindow)
-        self.actionLogOut.setObjectName(_fromUtf8("actionLogOut"))
-        self.actionLogOut.setShortcut("Ctrl+L")
-        self.actionLogOut.setStatusTip("Sign Out Of Your Account")
-        self.actionLogOut.triggered.connect(self.log_out)
+
 
 
         #View Users
@@ -594,24 +604,29 @@ class Ui_WelcomeWindow(object):
 
         
         #Add actions onto menu
-        self.menuFile.addAction(self.actionQuit)
         self.menuFile.addAction(self.actionLogOut)
-        self.menuSubjects.addAction(self.addSubject)
-        self.menuClasses.addAction(self.addClass)
-        self.menuUsers.addAction(self.viewUsers)
-        self.menuUsers.addAction(self.addAdmin)
-        self.menuUsers.addAction(self.addTeacher)
-        self.menuUsers.addAction(self.addStudent)
+        self.menuFile.addAction(self.actionQuit)
         self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuSubjects.menuAction())
-        self.menubar.addAction(self.menuClasses.menuAction())
-        self.menubar.addAction(self.menuUsers.menuAction())
+        
+        if currentUser.type != "Student":
+            if currentUser.type == "Admin":
+                self.menuSubjects.addAction(self.addSubject)
+                self.menuUsers.addAction(self.addAdmin)
+                self.menuUsers.addAction(self.addTeacher)
+                self.menuUsers.addAction(self.addStudent)
+                self.menubar.addAction(self.menuSubjects.menuAction())
+                self.menubar.addAction(self.menuUsers.menuAction())
+                self.menuUsers.addAction(self.viewUsers)
+                self.menubar.addAction(self.menuUsers.menuAction())
+            self.menuClasses.addAction(self.addClass)
+                     
+            self.menubar.addAction(self.menuClasses.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "Test", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Welcome Window", None))
         self.welcomeLabel.setText(_translate("MainWindow", "Welcome back,\n"
 "Tom!", None))
         self.homeworkTitle.setText(_translate("MainWindow", "My Homework: (5 Due Soon)", None))
@@ -630,6 +645,7 @@ class Ui_WelcomeWindow(object):
         self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
         self.actionQuit.setText(_translate("MainWindow", "Quit Application", None))
         self.actionLogOut.setText(_translate("MainWindow", "Log Out", None))
+        MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
 
     def view_users(self):
         self.viewUserPage = EditWindow()
