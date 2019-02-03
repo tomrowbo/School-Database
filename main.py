@@ -15,9 +15,9 @@ from zxcvbn import zxcvbn
 
 
 path = os.getcwd()
-host = "localhost"
-username = "default"
-password = "tomrowbotham"
+##host = "localhost"
+##username = "default"
+##password = "tomrowbotham"
 
 #select * from users inner join students on users.id = students.id
 
@@ -268,7 +268,7 @@ class Ui_MainWindow(object):
             global currentUser
 
             if data[6] == "Student":
-                c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":currentUser.name})
+                c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":currentUser.username})
                 yeargroup = c.fetchone()
                 currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8])
             else:   
@@ -824,6 +824,8 @@ class Ui_PasswordWindow(object):
                     c.execute("UPDATE users SET password = :password WHERE username =:username",
                               {"password":currentUser.password,"username":currentUser.username})
                     conn.commit()
+                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                   QtGui.QMessageBox.Ok)
                     return
                 QtGui.QMessageBox.question(self.window,"Error","Error: Your password is too weak and could be guessed easy. Please try use a more complex password.",
                                             QtGui.QMessageBox.Ok)
@@ -1070,7 +1072,8 @@ class Ui_CreateClassWindow(object):
                     chosen = True
         c.execute("INSERT INTO classes VALUES (:yeargroup,:teacher,:subject,:id)",
                   {"yeargroup":self.currentClass.yearGroup,"teacher":self.currentClass.teacher,"subject":self.currentClass.subject,"id":self.currentClass.id})
-
+        c.execute("CREATE TABLE "+self.currentClass.id+
+                  "(Student text)")
 
         conn.commit()
 
@@ -1551,7 +1554,7 @@ class Ui_EditUserWindow(object):
                   {"first":self.user.first,"last":self.user.last,"username":self.user.username,"password":self.user.password,"dob":self.user.dob,"email":self.user.email,"type":self.user.type,"pic":self.user.pic})
         if self.user.type == "Student":
             self.user.yeargroup = self.yearGroup.currentText()
-            c.execute("INSERT INTO student VALUES (:username,:yeargroup)",{"username":self.user.username,"yeargroup":self.user.yeargroup})
+            c.execute("INSERT INTO student VALUES (:username,:yeargroup,'NULL','NULL','NULL','NULL')",{"username":self.user.username,"yeargroup":self.user.yeargroup})
         conn.commit()
         self.window.hide()
         self.newWindow = EditWindow()
@@ -2480,10 +2483,11 @@ class Ui_ClassListWindow(object):
         self.titleLabel.setObjectName(_fromUtf8("titleLabel"))
 
         if self.typeOfUser == "Student":
-            c.execute("SELECT lesson FROM studentclass WHERE student = :username",{"username":self.username})
+            c.execute("SELECT lesson1,lesson2,lesson3,lesson4 FROM student WHERE username = :username",{"username":self.username})
+            self.allClasses = c.fetchone()
         else:
             c.execute("SELECT id FROM classes WHERE teacher = :username",{"username":self.username})
-        self.allClasses = c.fetchall()
+            self.allClasses = c.fetchall()
 
         if self.typeOfSearch == "Search":
             self.titleLabel.setGeometry(QtCore.QRect(0, 0, 641, 91))
@@ -2768,12 +2772,14 @@ class Ui_ClassListWindow(object):
             c.execute("SELECT * FROM classes WHERE subject = :subject",{"subject":self.subject})
             data = c.fetchall()
         elif self.type == "Student":
-            c.execute("SELECT lesson FROM studentclass WHERE student = :username",{"username":self.username})
-            tempdata = c.fetchall()
+            c.execute("SELECT lesson1,lesson2,lesson3,lesson4 FROM student WHERE username = :username",{"username":self.username})
+            tempdata = c.fetchone()
             data = []
-            for i in range(len(tempdata)):
-                c.execute("SELECT * FROM classes WHERE id = :id",{"id":tempdata[i][0]})
-                data.append(c.fetchall()[0])            
+            for i in range(4):
+                c.execute("SELECT * FROM classes WHERE id = :id",{"id":tempdata[i]})
+                temp = c.fetchone()
+                if temp != None:
+                    data.append(c.fetchone())            
 
         else:
             c.execute("SELECT * FROM classes WHERE teacher = :username",{"username":self.username})
@@ -2866,13 +2872,33 @@ class UsersClass():
         if choice == QtGui.QMessageBox.Yes:         
             alreadyInserted = False
             for i in range(len(self.allClasses)):
-                if self.id == self.allClasses[i][0]:
+                if self.id == self.allClasses[i]:
                     alreadyInserted = True
             if alreadyInserted == False:
-                c.execute("INSERT INTO studentclass VALUES (:username,:id)",{"username":self.username,"id":self.id})
+                if self.allClasses[0] == "NULL":                    
+                    c.execute("UPDATE student SET lesson1 = :id WHERE username = :username",{"id":self.id,"username":self.username})
+                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                               QtGui.QMessageBox.Ok)
+
+                elif self.allClasses[1] == "NULL":                    
+                    c.execute("UPDATE student SET lesson2 = :id WHERE username = :username",{"id":self.id,"username":self.username})
+                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                               QtGui.QMessageBox.Ok)
+
+                elif self.allClasses[2] == "NULL":                    
+                    c.execute("UPDATE student SET lesson3 = :id WHERE username = :username",{"id":self.id,"username":self.username})
+                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                               QtGui.QMessageBox.Ok)
+
+                elif self.allClasses[3] == "NULL":                    
+                    c.execute("UPDATE student SET lesson4 = :id WHERE username = :username",{"id":self.id,"username":self.username})
+                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                               QtGui.QMessageBox.Ok)
+
+                else:
+                    QtGui.QMessageBox.question(self.window,"Error","Error: Student has max number of subjects already.",
+                                           QtGui.QMessageBox.Ok)                    
                 conn.commit()
-                QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                           QtGui.QMessageBox.Ok)
                 self.allClasses.append([self.id])
                 self.retranslateUi(self.id,self.subject)
 
@@ -2881,7 +2907,7 @@ class UsersClass():
         choice = QtGui.QMessageBox.question(MainWindow, "Remove Student?",
         "Are you sure you would remove the student from this class?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:          
-            c.execute("DELETE FROM studentclass WHERE student = :username AND lesson = :id",{"username":self.username,"id":self.id})
+            self.allClasses.fi
             conn.commit()
             QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                         QtGui.QMessageBox.Ok)
