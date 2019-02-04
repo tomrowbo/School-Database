@@ -310,7 +310,7 @@ class Ui_WelcomeWindow(object):
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
         else:
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
+
         self.profilePic.setScaledContents(True)
         self.profilePic.setObjectName(_fromUtf8("profilePic"))
 
@@ -537,17 +537,89 @@ class Ui_WelcomeWindow(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
 
        
-
+        
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
-        self.menuSubjects = QtGui.QMenu(self.menubar)
-        self.menuSubjects.setObjectName(_fromUtf8("menuSubjects"))
         self.menuClasses = QtGui.QMenu(self.menubar)
         self.menuClasses.setObjectName(_fromUtf8("menuClasses"))
-        self.menuUsers = QtGui.QMenu(self.menubar)
-        self.menuUsers.setObjectName(_fromUtf8("menuUsers"))       
-        MainWindow.setMenuBar(self.menubar)
-        MainWindow.setStatusBar(self.statusbar)
+        self.menuMessages = QtGui.QMenu(self.menubar)
+        self.menuMessages.setObjectName(_fromUtf8("menuMessages"))
+        self.menuHomework = QtGui.QMenu(self.menubar)
+        self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
+        self.menubar.addAction(self.menuFile.menuAction())
+
+        if currentUser.type != "Admin":
+            self.menuHomework = QtGui.QMenu(self.menubar)
+            self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
+            self.menubar.addAction(self.menuHomework.menuAction())
+        if currentUser.type != "Student":
+            self.menuSubjects = QtGui.QMenu(self.menubar)
+            self.menuSubjects.setObjectName(_fromUtf8("menuSubjects"))
+            self.menuUsers = QtGui.QMenu(self.menubar)
+            self.menuUsers.setObjectName(_fromUtf8("menuUsers"))
+
+
+
+                            #View Users
+            self.viewUsers = QtGui.QAction(MainWindow)
+            self.viewUsers.setObjectName(_fromUtf8("viewUsers"))
+            self.viewUsers.setStatusTip("View Users")
+            self.viewUsers.triggered.connect(self.view_users)
+
+            
+            
+
+            if currentUser.type == "Admin":
+                #Add Class
+                self.addClass = QtGui.QAction(MainWindow)
+                self.addClass.setObjectName(_fromUtf8("addClass"))
+                self.addClass.setStatusTip("Create a new class")
+                self.addClass.triggered.connect(self.create_class)
+
+                #Add Subject
+                self.addSubject = QtGui.QAction(MainWindow)
+                self.addSubject.setObjectName(_fromUtf8("addSubject"))
+                self.addSubject.setStatusTip("Create a new subject")
+                self.addSubject.triggered.connect(self.create_subject)
+
+                #Add Admin
+                self.addAdmin = QtGui.QAction(MainWindow)
+                self.addAdmin.setObjectName(_fromUtf8("addAdmin"))
+                self.addAdmin.setStatusTip("Create a new Admin account")
+                self.addAdmin.triggered.connect(self.create_admin)
+
+                #Add Teacher
+                self.addTeacher = QtGui.QAction(MainWindow)
+                self.addTeacher.setObjectName(_fromUtf8("addTeacher"))
+                self.addTeacher.setStatusTip("Create a new Teacher account")
+                self.addTeacher.triggered.connect(self.create_teacher)
+
+                #Add Student
+                self.addStudent = QtGui.QAction(MainWindow)
+                self.addStudent.setObjectName(_fromUtf8("addStudent"))
+                self.addStudent.setStatusTip("Create a new student account")
+                self.addStudent.triggered.connect(self.create_student)
+                
+                self.menuSubjects.addAction(self.addSubject)
+                self.menuUsers.addAction(self.addAdmin)
+                self.menuUsers.addAction(self.addTeacher)
+                self.menuUsers.addAction(self.addStudent)
+                self.menuUsers.addAction(self.viewUsers)
+                self.menuClasses.addAction(self.addClass)
+
+            else:
+                self.addHomework = QtGui.QAction(MainWindow)
+                self.addHomework.setObjectName(_fromUtf8("addHomework"))
+                self.addHomework.setStatusTip("Create a new homework")
+                self.menuHomework.addAction(self.addHomework)
+                self.addHomework.triggered.connect(self.create_homework)
+
+            self.menubar.addAction(self.menuSubjects.menuAction())
+            self.menubar.addAction(self.menuClasses.menuAction())
+            self.menubar.addAction(self.menuUsers.menuAction())
+            
+                
+
 
          #Adding to the bars
 
@@ -566,44 +638,6 @@ class Ui_WelcomeWindow(object):
         self.actionQuit.triggered.connect(self.close_app)
 
 
-
-
-        #View Users
-        self.viewUsers = QtGui.QAction(MainWindow)
-        self.viewUsers.setObjectName(_fromUtf8("viewUsers"))
-        self.viewUsers.setStatusTip("View Users")
-        self.viewUsers.triggered.connect(self.view_users)        
-
-        #Add Class
-        self.addClass = QtGui.QAction(MainWindow)
-        self.addClass.setObjectName(_fromUtf8("addClass"))
-        self.addClass.setStatusTip("Create a new class")
-        self.addClass.triggered.connect(self.create_class)
-
-        #Add Subject
-        self.addSubject = QtGui.QAction(MainWindow)
-        self.addSubject.setObjectName(_fromUtf8("addSubject"))
-        self.addSubject.setStatusTip("Create a new subject")
-        self.addSubject.triggered.connect(self.create_subject)
-
-        #Add Admin
-        self.addAdmin = QtGui.QAction(MainWindow)
-        self.addAdmin.setObjectName(_fromUtf8("addAdmin"))
-        self.addAdmin.setStatusTip("Create a new Admin account")
-        self.addAdmin.triggered.connect(self.create_admin)
-
-        #Add Teacher
-        self.addTeacher = QtGui.QAction(MainWindow)
-        self.addTeacher.setObjectName(_fromUtf8("addTeacher"))
-        self.addTeacher.setStatusTip("Create a new Teacher account")
-        self.addTeacher.triggered.connect(self.create_teacher)
-
-        #Add Student
-        self.addStudent = QtGui.QAction(MainWindow)
-        self.addStudent.setObjectName(_fromUtf8("addStudent"))
-        self.addStudent.setStatusTip("Create a new student account")
-        self.addStudent.triggered.connect(self.create_student)
-
         self.resetPassword = QtGui.QAction(MainWindow)
         self.resetPassword.setObjectName(_fromUtf8("resetPassword"))
         self.resetPassword.setStatusTip("Change your password.")
@@ -614,21 +648,12 @@ class Ui_WelcomeWindow(object):
         self.menuFile.addAction(self.actionLogOut)
         self.menuFile.addAction(self.actionQuit)
         self.menuFile.addAction(self.resetPassword)
-        self.menubar.addAction(self.menuFile.menuAction())
         
-        if currentUser.type != "Student":
-            if currentUser.type == "Admin":
-                self.menuSubjects.addAction(self.addSubject)
-                self.menuUsers.addAction(self.addAdmin)
-                self.menuUsers.addAction(self.addTeacher)
-                self.menuUsers.addAction(self.addStudent)
-                self.menubar.addAction(self.menuSubjects.menuAction())
-                self.menubar.addAction(self.menuUsers.menuAction())
-                self.menuUsers.addAction(self.viewUsers)
-                self.menubar.addAction(self.menuUsers.menuAction())
-            self.menuClasses.addAction(self.addClass)
-                     
-            self.menubar.addAction(self.menuClasses.menuAction())
+
+        MainWindow.setMenuBar(self.menubar)
+        MainWindow.setStatusBar(self.statusbar)
+        self.menubar.addAction(self.menuMessages.menuAction())
+
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -642,15 +667,23 @@ class Ui_WelcomeWindow(object):
         self.viewButton.setText(_translate("MainWindow", "Click to view more", None))
         self.viewButton_2.setText(_translate("MainWindow", "Click to view more", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
-        self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
         self.menuClasses.setTitle(_translate("MainWindow", "Classes", None))
+        self.menuMessages.setTitle(_translate("MainWindow", "Messages", None))
         self.menuUsers.setTitle(_translate("MainWindow", "Users", None))
-        self.viewUsers.setText(_translate("MainWindow","View Users",None))
-        self.addClass.setText(_translate("MainWindow","Add Class",None))
-        self.addSubject.setText(_translate("MainWindow","Add Subject",None))
-        self.addTeacher.setText(_translate("MainWindow","Add Teacher",None))
-        self.addStudent.setText(_translate("MainWindow","Add Student",None))
-        self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
+        if currentUser.type != "Admin":
+            self.menuHomework.setTitle(_translate("MainWindow", "Homework", None))
+        
+        if currentUser.type != "Student":
+            if currentUser.type == "Admin":
+                self.addClass.setText(_translate("MainWindow","Add Class",None))
+                self.addSubject.setText(_translate("MainWindow","Add Subject",None))
+                self.addTeacher.setText(_translate("MainWindow","Add Teacher",None))
+                self.addStudent.setText(_translate("MainWindow","Add Student",None))
+                self.viewUsers.setText(_translate("MainWindow","View Users",None))
+                self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
+            else:
+                self.addHomework.setText(_translate("MainWindow","Add Homework",None))
+            self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
         self.actionQuit.setText(_translate("MainWindow", "Quit Application", None))
         self.actionLogOut.setText(_translate("MainWindow", "Log Out", None))
         self.resetPassword.setText(_translate("MainWindow","Reset Password",None))
@@ -692,7 +725,16 @@ class Ui_WelcomeWindow(object):
         self.classui = Ui_CreateClassWindow()
         self.classui.setupUi(self.classPage,Class("NULL","NULL","NULL","NULL"))
         self.classPage.show()
-        
+
+
+    def create_homework(self):
+        self.homeworkPage = EditWindow()
+        self.homeworkui = Ui_HomeWorkWindow()
+        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","NULL","NULL","NULL"))
+        self.homeworkPage.show()
+
+
+    
     def close_app(self):
         choice = QtGui.QMessageBox.question(self.window,"Close Application","Are you sure you would like to quit?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:
@@ -2484,10 +2526,10 @@ class Ui_ClassListWindow(object):
 
         if self.typeOfUser == "Student":
             c.execute("SELECT lesson1,lesson2,lesson3,lesson4 FROM student WHERE username = :username",{"username":self.username})
-            self.allClasses = c.fetchone()
+            self.allClasses = list(c.fetchone())
         else:
             c.execute("SELECT id FROM classes WHERE teacher = :username",{"username":self.username})
-            self.allClasses = c.fetchall()
+            self.allClasses = list(c.fetchall())
 
         if self.typeOfSearch == "Search":
             self.titleLabel.setGeometry(QtCore.QRect(0, 0, 641, 91))
@@ -2767,29 +2809,31 @@ class Ui_ClassListWindow(object):
         self.retranlsateUi(self.window)
 
     def search(self):
-        
+        self.data = []
         if self.typeOfSearch == "Search":
             c.execute("SELECT * FROM classes WHERE subject = :subject",{"subject":self.subject})
-            data = c.fetchall()
+            data = list(c.fetchall())
+            for i in range(len(data)):
+                self.data.append(list(data[i]))
+            print(self.data)
         elif self.type == "Student":
+        
             c.execute("SELECT lesson1,lesson2,lesson3,lesson4 FROM student WHERE username = :username",{"username":self.username})
-            tempdata = c.fetchone()
-            data = []
-            for i in range(4):
-                c.execute("SELECT * FROM classes WHERE id = :id",{"id":tempdata[i]})
+            data = list(c.fetchone())
+            for i in range(len(data)):
+                c.execute("SELECT * FROM classes WHERE id = :id",{"id":data[i]})
                 temp = c.fetchone()
                 if temp != None:
-                    data.append(c.fetchone())            
+                    self.data.append(list(temp))
+    
 
         else:
             c.execute("SELECT * FROM classes WHERE teacher = :username",{"username":self.username})
             data = c.fetchall()
+        print(self.data)
 
-            
-        
-        self.data = []
-        for i in range(len(data)):
-            self.data.append(list(data[i]))
+
+
 
     def class_button(self):
         self.showClassesPage = EditWindow()
@@ -2838,13 +2882,15 @@ class UsersClass():
 
                 
         else:
-            self.remove.setText(_translate("ClassListWindow","Add",None))
-            if self.typeOfUser:
+
+            if self.typeOfUser == "Student":
                 self.remove.clicked.connect(self.add_student)
+                self.remove.setText(_translate("ClassListWindow","Add",None))
             else:
                 self.remove.clicked.connect(self.remove_student)
+                self.remove.setText(_translate("ClassListWindow","Remove",None))
             for i in range(len(self.allClasses)):
-                if self.id == self.allClasses[i][0]:
+                if self.id == self.allClasses[i]:
                     self.remove.setText(_translate("ClassListWindow","Remove",None))
                     self.remove.clicked.connect(self.remove_student)
                     break
@@ -2879,27 +2925,36 @@ class UsersClass():
                     c.execute("UPDATE student SET lesson1 = :id WHERE username = :username",{"id":self.id,"username":self.username})
                     QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                                QtGui.QMessageBox.Ok)
+                    number = 0
 
                 elif self.allClasses[1] == "NULL":                    
                     c.execute("UPDATE student SET lesson2 = :id WHERE username = :username",{"id":self.id,"username":self.username})
                     QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                                QtGui.QMessageBox.Ok)
+                    number = 1
+
 
                 elif self.allClasses[2] == "NULL":                    
                     c.execute("UPDATE student SET lesson3 = :id WHERE username = :username",{"id":self.id,"username":self.username})
                     QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                                QtGui.QMessageBox.Ok)
+                    number = 2
 
                 elif self.allClasses[3] == "NULL":                    
                     c.execute("UPDATE student SET lesson4 = :id WHERE username = :username",{"id":self.id,"username":self.username})
                     QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                                QtGui.QMessageBox.Ok)
+                    number = 3
 
                 else:
                     QtGui.QMessageBox.question(self.window,"Error","Error: Student has max number of subjects already.",
-                                           QtGui.QMessageBox.Ok)                    
+                                           QtGui.QMessageBox.Ok)
+                    return
+                c.execute("INSERT INTO " + self.id + " (student) VALUES (:username)",{"username":self.username})
                 conn.commit()
-                self.allClasses.append([self.id])
+                print(self.allClasses)
+                self.allClasses.remove(self.allClasses[number])
+                self.allClasses.insert(number,[self.id])
                 self.retranslateUi(self.id,self.subject)
 
 
@@ -2922,8 +2977,10 @@ class UsersClass():
 
 
 class Ui_HomeWorkWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow,homework):
 
+        self.window = MainWindow
+        self.homework = homework
         #Creating Main Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(640, 480)

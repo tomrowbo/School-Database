@@ -71,5 +71,15 @@ class StudentClass:
         self.student = student
         self.currentClass = currentClass
         self.predicted = none
+
+class Homework:
+    def __init__(self,classId,due,title,desc,timecreated):
+        self.classId = classId
+        self.due = due
+        self.title = title
+        self.desc = desc
+        self.timecreated = timecreated
+
+        
         
 
