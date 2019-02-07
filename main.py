@@ -186,7 +186,7 @@ class Ui_MainWindow(object):
         self.loginBtn.setFont(labelfont)
         self.loginBtn.setObjectName(_fromUtf8("loginBtn"))
         self.loginBtn.setShortcut("Enter")
-        ########################Login Event###########################
+        ########################Login Event###########################   
         self.loginBtn.clicked.connect(self.login_)      
         ##############################################################
 
@@ -239,7 +239,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Windows Vista"))
         
-
 
     
     def close_app(self):
@@ -2346,7 +2345,6 @@ class Ui_SearchUsers(object):
         if self.dobCheck.isChecked():
             filtered = []
             dob = str(self.dateEdit.date().toPyDate())
-            print(dob)
             for i in range(len(self.data)):
                 if self.data[i][4] == dob:
                     filtered.append(self.data[i])
@@ -2525,8 +2523,8 @@ class Ui_ClassListWindow(object):
         self.titleLabel.setObjectName(_fromUtf8("titleLabel"))
 
         if self.typeOfUser == "Student":
-            c.execute("SELECT lesson1,lesson2,lesson3,lesson4 FROM student WHERE username = :username",{"username":self.username})
-            self.allClasses = list(c.fetchone())
+            c.execute("SELECT classid FROM studentclass WHERE username = :username",{"username":self.username})
+            self.allClasses = list(c.fetchall())
         else:
             c.execute("SELECT id FROM classes WHERE teacher = :username",{"username":self.username})
             self.allClasses = list(c.fetchall())
@@ -2818,10 +2816,10 @@ class Ui_ClassListWindow(object):
             print(self.data)
         elif self.type == "Student":
         
-            c.execute("SELECT lesson1,lesson2,lesson3,lesson4 FROM student WHERE username = :username",{"username":self.username})
-            data = list(c.fetchone())
+            c.execute("SELECT classid FROM studentclass WHERE username = :username",{"username":self.username})
+            data = list(c.fetchall())
             for i in range(len(data)):
-                c.execute("SELECT * FROM classes WHERE id = :id",{"id":data[i]})
+                c.execute("SELECT * FROM classes WHERE id = :id",{"id":data[i][0]})
                 temp = c.fetchone()
                 if temp != None:
                     self.data.append(list(temp))
@@ -2830,7 +2828,7 @@ class Ui_ClassListWindow(object):
         else:
             c.execute("SELECT * FROM classes WHERE teacher = :username",{"username":self.username})
             data = c.fetchall()
-        print(self.data)
+
 
 
 
@@ -2866,35 +2864,45 @@ class UsersClass():
         self.type = typeOfWindow
         self.username = username
         self.window = window
+        self.main.clicked.connect(self.open_window)
+        self.remove.clicked.connect(self.remove_button)
+        self.signal = ""
 
     def retranslateUi(self,id, subject):
         self.id = id
         self.subject = subject
         self.main.setText(_translate("ClassListWindow",id + " - " + subject,None))
-        self.main.clicked.connect(self.open_window)
         if self.type == "List":
             if self.typeOfUser == "Teacher":
-                self.remove.clicked.connect(self.open_window)
                 self.remove.setText(_translate("ClassListWindow","Edit",None))
+                self.signal = "Edit"
             else:
+                self.signal = "Remove"
                 self.remove.setText(_translate("ClassListWindow","Remove",None))
-                self.remove.clicked.connect(self.remove_student)
-
-                
+             
         else:
 
             if self.typeOfUser == "Student":
-                self.remove.clicked.connect(self.add_student)
+                self.signal = "Add"
                 self.remove.setText(_translate("ClassListWindow","Add",None))
+                for i in range(len(self.allClasses)):
+                    if self.id == self.allClasses[i]:
+                        self.remove.setText(_translate("ClassListWindow","Remove",None))
+                        self.signal = "Remove"
+                        break
             else:
-                self.remove.clicked.connect(self.remove_student)
+                self.signal = "Remove"
                 self.remove.setText(_translate("ClassListWindow","Remove",None))
-            for i in range(len(self.allClasses)):
-                if self.id == self.allClasses[i]:
-                    self.remove.setText(_translate("ClassListWindow","Remove",None))
-                    self.remove.clicked.connect(self.remove_student)
-                    break
-       
+
+
+    def remove_button(self):
+        if self.signal == "Edit":
+            self.open_window()
+        elif self.signal == "Remove":
+            self.remove_student()
+        elif self.signal == "Add":
+            self.add_student()   
+        
 
     def hide_all(self):
         self.main.hide()
@@ -2916,58 +2924,31 @@ class UsersClass():
         choice = QtGui.QMessageBox.question(MainWindow, "Add Student?",
         "Are you sure you would add the student to this class?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:         
-            alreadyInserted = False
-            for i in range(len(self.allClasses)):
-                if self.id == self.allClasses[i]:
-                    alreadyInserted = True
-            if alreadyInserted == False:
-                if self.allClasses[0] == "NULL":                    
-                    c.execute("UPDATE student SET lesson1 = :id WHERE username = :username",{"id":self.id,"username":self.username})
-                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                               QtGui.QMessageBox.Ok)
-                    number = 0
-
-                elif self.allClasses[1] == "NULL":                    
-                    c.execute("UPDATE student SET lesson2 = :id WHERE username = :username",{"id":self.id,"username":self.username})
-                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                               QtGui.QMessageBox.Ok)
-                    number = 1
+            c.execute("INSERT INTO studentclass VALUES (:username,:classid)",{"username":self.username,"classid":self.id})
+            c.execute("INSERT INTO " + self.id + " (student) VALUES (:username)",{"username":self.username})
+            conn.commit()
+            self.allClasses.append(self.id)
+            self.retranslateUi(self.id,self.subject)
+            self.saved_window()
+            
 
 
-                elif self.allClasses[2] == "NULL":                    
-                    c.execute("UPDATE student SET lesson3 = :id WHERE username = :username",{"id":self.id,"username":self.username})
-                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                               QtGui.QMessageBox.Ok)
-                    number = 2
-
-                elif self.allClasses[3] == "NULL":                    
-                    c.execute("UPDATE student SET lesson4 = :id WHERE username = :username",{"id":self.id,"username":self.username})
-                    QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
-                                               QtGui.QMessageBox.Ok)
-                    number = 3
-
-                else:
-                    QtGui.QMessageBox.question(self.window,"Error","Error: Student has max number of subjects already.",
-                                           QtGui.QMessageBox.Ok)
-                    return
-                c.execute("INSERT INTO " + self.id + " (student) VALUES (:username)",{"username":self.username})
-                conn.commit()
-                print(self.allClasses)
-                self.allClasses.remove(self.allClasses[number])
-                self.allClasses.insert(number,[self.id])
-                self.retranslateUi(self.id,self.subject)
+    def saved_window(self):
+        QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                   QtGui.QMessageBox.Ok)
 
 
     def remove_student(self):
         choice = QtGui.QMessageBox.question(MainWindow, "Remove Student?",
         "Are you sure you would remove the student from this class?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:          
-            self.allClasses.fi
+            c.execute("DELETE FROM studentclass WHERE username = :username AND classid = :classid",{"username":self.username,"classid":self.id})
+            c.execute("DELETE FROM "+self.id+ " WHERE student = :username",{"username":self.username})
             conn.commit()
             QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                         QtGui.QMessageBox.Ok)
             try:
-                self.allClasses.remove([self.id])
+                self.allClasses.remove(self.id)
             except:
                 pass
             self.retranslateUi(self.id,self.subject)
