@@ -729,7 +729,7 @@ class Ui_WelcomeWindow(object):
     def create_homework(self):
         self.homeworkPage = EditWindow()
         self.homeworkui = Ui_HomeWorkWindow()
-        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","NULL","NULL","NULL"))
+        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","01/01/2001","NULL","NULL"))
         self.homeworkPage.show()
 
 
@@ -774,6 +774,7 @@ class Ui_PasswordWindow(object):
         #Creating Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(640, 480)
+        MainWindow.setStyleSheet(css)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
 
@@ -1570,6 +1571,7 @@ class Ui_EditUserWindow(object):
         self.user.first = self.firstEdit.text()
         self.user.last = self.lastEdit.text()
         self.user.username = (self.user.first[0]+self.user.last).lower()
+        length = len(self.user.username) 
         #TEST THIS LATER
         c.execute("SELECT username FROM users WHERE username LIKE :username ORDER BY username ASC",
                   {"username":str(self.user.username)+"%"})
@@ -1583,7 +1585,7 @@ class Ui_EditUserWindow(object):
             while not chosen:
                 if self.user.username in usernames:
                     #print(self.username[:len(self.last)+1])
-                    self.user.username = self.user.username[:-1] + str(int(self.user.username[-1])+1)
+                    self.user.username = self.user.username[:length-1] + str(int(self.user.username[length-1:])+1)
                 else:
                     chosen = True
         self.user.dob = str(self.dateEdit.date().toPyDate())
@@ -2960,11 +2962,14 @@ class UsersClass():
 class Ui_HomeWorkWindow(object):
     def setupUi(self, MainWindow,homework):
 
+
         self.window = MainWindow
         self.homework = homework
+
         #Creating Main Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(640, 480)
+        MainWindow.setStyleSheet(css)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
 
@@ -2973,6 +2978,10 @@ class Ui_HomeWorkWindow(object):
         self.saveBtn.setGeometry(QtCore.QRect(550, 390, 75, 27))
         self.saveBtn.setFont(labelfont)
         self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
+        if self.homework.homeworkId == "NULL":
+            self.saveBtn.clicked.connect(self.create)
+        else:
+            self.saveBtn.clicked.connect(self.edit)
 
         #Full Name Button
         self.classLabel = QtGui.QLabel(self.centralwidget)
@@ -2985,10 +2994,19 @@ class Ui_HomeWorkWindow(object):
         self.classCombo = QtGui.QComboBox(self.centralwidget)
         self.classCombo.setGeometry(QtCore.QRect(180, 90, 351, 31))
         self.classCombo.setObjectName(_fromUtf8("classCombo"))
+        c.execute("SELECT id FROM classes WHERE teacher == :teacher",{"teacher":currentUser.username})
+        data = list(c.fetchall())
+        for classid in data:
+            self.classCombo.addItem(classid[0])
+        if self.homework.homeworkId != "NULL":
+            for i in range(len(data)):
+                if self.homework.classId == data[i][0]:
+                    self.classCombo.setCurrentIndex(i)
+
 
         #Edit Homework Label
         self.editHomeworkLabel = QtGui.QLabel(self.centralwidget)
-        self.editHomeworkLabel.setGeometry(QtCore.QRect(110, 0, 421, 91))
+        self.editHomeworkLabel.setGeometry(QtCore.QRect(65, 0, 511, 91))
         self.editHomeworkLabel.setFont(titlefont)
         self.editHomeworkLabel.setTextFormat(QtCore.Qt.PlainText)
         self.editHomeworkLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -3005,11 +3023,19 @@ class Ui_HomeWorkWindow(object):
         self.dateEdit = QtGui.QDateEdit(self.centralwidget)
         self.dateEdit.setGeometry(QtCore.QRect(180, 140, 351, 31))
         self.dateEdit.setObjectName(_fromUtf8("dateEdit"))
+        self.dateEdit.setMinimumDate(QtCore.QDate.currentDate())
+        self.dateEdit.setCalendarPopup(True)
+        self.dateEdit.calendarWidget().installEventFilter(MainWindow)
+        date = QtCore.QDate(int(self.homework.dueyear),int(self.homework.duemonth),int(self.homework.dueday))
+        self.dateEdit.setDate(date)
+        
 
         #Description Edit
         self.descriptionEdit = QtGui.QPlainTextEdit(self.centralwidget)
         self.descriptionEdit.setGeometry(QtCore.QRect(180, 240, 351, 181))
         self.descriptionEdit.setObjectName(_fromUtf8("descriptionEdit"))
+        if self.homework.desc != "NULL":
+            self.descriptionEdit.setPlainText(_translate("EditHomeWorkWindow",self.homework.desc,None))
 
         #Description Label
         self.descriptionLabel = QtGui.QLabel(self.centralwidget)
@@ -3029,6 +3055,8 @@ class Ui_HomeWorkWindow(object):
         self.titleEdit = QtGui.QLineEdit(self.centralwidget)
         self.titleEdit.setGeometry(QtCore.QRect(180, 190, 351, 31))
         self.titleEdit.setObjectName(_fromUtf8("titleEdit"))
+        if self.homework.title != "NULL":
+            self.titleEdit.setText(_translate("EditHomeWorkWindow",self.homework.title,None))
         
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -3043,14 +3071,54 @@ class Ui_HomeWorkWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "Edit Homework Window", None))
-        self.saveBtn.setText(_translate("MainWindow", "Save", None))
+        if self.homework.homeworkId == "NULL":
+            self.saveBtn.setText(_translate("MainWindow", "Create", None))
+            MainWindow.setWindowTitle(_translate("MainWindow", "Create Homework Window", None))
+            self.editHomeworkLabel.setText(_translate("MainWindow", "CREATE HOMEWORK", None))
+        else:
+            self.saveBtn.setText(_translate("MainWindow", "Save", None))
+            MainWindow.setWindowTitle(_translate("MainWindow", "Edit Homework Window", None))
+            self.editHomeworkLabel.setText(_translate("MainWindow", "EDIT HOMEWORK", None))
         self.classLabel.setText(_translate("MainWindow", "CLASS:", None))
-        self.editHomeworkLabel.setText(_translate("MainWindow", "EDIT HOMEWORK", None))
+        
         self.dueLabel.setText(_translate("MainWindow", "DUE DATE:", None))
         self.descriptionLabel.setText(_translate("MainWindow", "DESCRIPTION:", None))
         self.titleLabel.setText(_translate("MainWindow", "TITLE:", None))
         MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
+
+
+    def create(self):
+        classid = self.classCombo.currentText()
+        duedate = str(self.dateEdit.date().toPyDate())
+        duedate = duedate[8:]+ "-"+duedate[5:7]+"-"+duedate[:4]
+        title = self.titleEdit.text()
+        desc = self.descriptionEdit.toPlainText()
+        homeworkId = classid + "_1"
+        length = len(homeworkId)
+
+        c.execute("SELECT homeworkid FROM homework WHERE homeworkid LIKE :homeworkid ORDER BY homeworkid ASC",
+                  {"homeworkid":classid})
+        data = list(c.fetchall())
+        if homeworkId in data:
+            chosen = False
+            while not chosen:
+                if homeworkId in data:
+                    homeworkId = homeworkId[:length]+str(int(homework[length:])+1)
+                else:
+                    chosen = True
+        c.execute("INSERT INTO homework VALUES (:homeworkid,:classid,:duedate,:title,:description)",
+                  {"homeworkid":homeworkId,"classid":classid,"duedate":duedate,"title":title,"description":desc})
+        conn.commit()
+        self.window.hide()
+        self.newWindow = EditWindow()
+        self.newPage = Ui_HomeWorkWindow()
+        self.newPage.setupUi(self.newWindow,Homework(homeworkId,classid,duedate,title,desc))
+        self.newWindow.show()
+
+            
+
+    def edit(self):
+        pass
 
     
 #Use this as MainWindow for the close event popup window

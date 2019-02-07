@@ -73,13 +73,24 @@ class StudentClass:
         self.predicted = none
 
 class Homework:
-    def __init__(self,classId,due,title,desc,timecreated):
+    def __init__(self,homeworkId,classId,due,title,desc):
+        self.homeworkId = homeworkId
         self.classId = classId
-        self.due = due
+        self.due = str(due)
         self.title = title
         self.desc = desc
-        self.timecreated = timecreated
 
+    @property
+    def dueyear(self):
+        return self.due[6:]
+    
+    @property
+    def duemonth(self):
+        return self.due[3:5]
+    
+    @property
+    def dueday(self):
+        return self.due[:2]
         
         
 
