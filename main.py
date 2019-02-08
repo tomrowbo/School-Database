@@ -12,6 +12,7 @@ from shutil import copyfile
 import os
 from difflib import SequenceMatcher
 from zxcvbn import zxcvbn
+import time
 
 
 path = os.getcwd()
@@ -56,17 +57,17 @@ labelfont2.setWeight(50)
 
 labelfont3 = QtGui.QFont()
 labelfont3.setFamily(_fromUtf8("Gadugi"))
-labelfont3.setPointSize(16)
 labelfont3.setBold(False)
 labelfont3.setWeight(50)
 labelfont3.setPointSize(12)
 
 labelfont4 = QtGui.QFont()
 labelfont4.setFamily(_fromUtf8("Gadugi"))
-labelfont4.setPointSize(16)
 labelfont4.setBold(False)
 labelfont4.setWeight(50)
 labelfont4.setPointSize(10)
+
+
 
 titlefont = QtGui.QFont()
 titlefont.setFamily(_fromUtf8("Microsoft New Tai Lue"))
@@ -382,7 +383,7 @@ class Ui_WelcomeWindow(object):
         self.topDesc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.topDesc.setObjectName(_fromUtf8("topDesc"))
 
-        self.top1 = WindowButtons(self.topButton,self.topTitle,self.topDesc)
+        self.top1 = WindowButtons(self.topButton,self.topTitle,self.topDesc,"Homework")
 
 
         ## RESULT TWO
@@ -401,12 +402,10 @@ class Ui_WelcomeWindow(object):
 
         self.topButton_2 = QtGui.QPushButton(self.centralwidget)
         self.topButton_2.setGeometry(QtCore.QRect(80, 230, 481, 51))
-        self.topButton_2.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-        "border: 1px solid black;}"))
         self.topButton_2.setText(_fromUtf8(""))
         self.topButton_2.setObjectName(_fromUtf8("topButton_2"))
 
-        self.top2 = WindowButtons(self.topButton_2,self.topTitle_2,self.topDesc_2)
+        self.top2 = WindowButtons(self.topButton_2,self.topTitle_2,self.topDesc_2,"Homework")
 
         ##RESULT THREE
         self.topTitle_3 = QtGui.QLabel(self.centralwidget)
@@ -423,12 +422,10 @@ class Ui_WelcomeWindow(object):
         
         self.topButton_3 = QtGui.QPushButton(self.centralwidget)
         self.topButton_3.setGeometry(QtCore.QRect(80, 280, 481, 51))
-        self.topButton_3.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-"border: 1px solid black;}"))
         self.topButton_3.setText(_fromUtf8(""))
         self.topButton_3.setObjectName(_fromUtf8("topButton_3"))
 
-        self.top3 = WindowButtons(self.topButton_3,self.topTitle_3,self.topDesc_3)
+        self.top3 = WindowButtons(self.topButton_3,self.topTitle_3,self.topDesc_3,"Homework")
 
 
         ## BOTTOM RESULTS
@@ -448,12 +445,10 @@ class Ui_WelcomeWindow(object):
 
         self.bottomButton = QtGui.QPushButton(self.centralwidget)
         self.bottomButton.setGeometry(QtCore.QRect(80, 378, 481, 51))
-        self.bottomButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-        "border: 1px solid black;}"))
         self.bottomButton.setText(_fromUtf8(""))
         self.bottomButton.setObjectName(_fromUtf8("bottomButton"))
 
-        self.bottom1 = WindowButtons(self.bottomButton,self.bottomTitle,self.bottomDesc)
+        self.bottom1 = WindowButtons(self.bottomButton,self.bottomTitle,self.bottomDesc,"Message")
 
         ## RESULT 2
         self.bottomDesc_2 = QtGui.QLabel(self.centralwidget)
@@ -464,8 +459,6 @@ class Ui_WelcomeWindow(object):
         
         self.bottomButton_2 = QtGui.QPushButton(self.centralwidget)
         self.bottomButton_2.setGeometry(QtCore.QRect(80, 428, 481, 51))
-        self.bottomButton_2.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-"border: 1px solid black;}"))
         self.bottomButton_2.setText(_fromUtf8(""))
         self.bottomButton_2.setObjectName(_fromUtf8("bottomButton_2"))
         
@@ -475,7 +468,7 @@ class Ui_WelcomeWindow(object):
         self.bottomTitle_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.bottomTitle_2.setObjectName(_fromUtf8("bottomTitle_2"))
 
-        self.bottom2 = WindowButtons(self.bottomButton_2,self.bottomTitle_2,self.bottomDesc_2)
+        self.bottom2 = WindowButtons(self.bottomButton_2,self.bottomTitle_2,self.bottomDesc_2,"Message")
 
         ## RESULT THREE
         self.bottomTitle_3 = QtGui.QLabel(self.centralwidget)
@@ -492,12 +485,10 @@ class Ui_WelcomeWindow(object):
         
         self.bottomButton_3 = QtGui.QPushButton(self.centralwidget)
         self.bottomButton_3.setGeometry(QtCore.QRect(80, 478, 481, 51))
-        self.bottomButton_3.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-        "border: 1px solid black;}"))
         self.bottomButton_3.setText(_fromUtf8(""))
         self.bottomButton_3.setObjectName(_fromUtf8("bottomButton_3"))
 
-        self.bottom3 = WindowButtons(self.bottomButton_3,self.bottomTitle_3,self.bottomDesc_3)
+        self.bottom3 = WindowButtons(self.bottomButton_3,self.bottomTitle_3,self.bottomDesc_3,"Message")
 
         #Sorting out alignment
 #        self.profilePic.raise_()
@@ -612,6 +603,12 @@ class Ui_WelcomeWindow(object):
                 self.addHomework.setStatusTip("Create a new homework")
                 self.menuHomework.addAction(self.addHomework)
                 self.addHomework.triggered.connect(self.create_homework)
+
+                self.viewHomework = QtGui.QAction(MainWindow)
+                self.viewHomework.setObjectName(_fromUtf8("viewHomework"))
+                self.viewHomework.setStatusTip("View my homework")
+                self.menuHomework.addAction(self.viewHomework)
+                self.viewHomework.triggered.connect(self.view_homework)                
 
             self.menubar.addAction(self.menuSubjects.menuAction())
             self.menubar.addAction(self.menuClasses.menuAction())
@@ -732,6 +729,11 @@ class Ui_WelcomeWindow(object):
         self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","01/01/2001","NULL","NULL"))
         self.homeworkPage.show()
 
+    def view_homework(self):
+        self.viewHomeworkPage = EditWindow()
+        self.viewhomeworkui = Ui_ViewHomeworkWindow()
+        self.viewhomeworkui.setupUi(self.viewHomeworkPage)
+        self.viewHomeworkPage.show()
 
     
     def close_app(self):
@@ -759,14 +761,38 @@ class Ui_WelcomeWindow(object):
 
 
 class WindowButtons():
-    def __init__(self,button,title,desc):
+    def __init__(self,button,title,desc,typeOfBox):
         self.button = button
         self.title = title
         self.desc = desc
+        self.typeOfBox = typeOfBox
 
-    def retranslateUi(self,title,desc):
+        self.button.clicked.connect(self.open_window)
+
+    def retranslateUi(self,title,desc,id):
         self.title.setText(_translate("MainWindow",title,None))
         self.desc.setText(_translate("MainWindow",desc,None))
+        self.id = id
+
+    def hide_all(self):
+        self.button.hide()
+        self.title.hide()
+        self.desc.hide()
+
+    def show_all(self):
+        self.button.show()
+        self.title.show()
+        self.desc.show()
+
+    def open_window(self):
+        if self.typeOfBox == "Homework":
+            c.execute("SELECT * FROM homework WHERE homeworkid = :id",{"id":self.id})
+            lesson = c.fetchone()
+            
+            self.homeworkPage = EditWindow()
+            self.homeworkui = Ui_HomeWorkWindow()
+            self.homeworkui.setupUi(self.homeworkPage,Homework(lesson[0],lesson[1],lesson[2],lesson[3],lesson[4]))
+            self.homeworkPage.show()
 
 class Ui_PasswordWindow(object):
     def setupUi(self, MainWindow):
@@ -3120,7 +3146,403 @@ class Ui_HomeWorkWindow(object):
     def edit(self):
         pass
 
+
+class Ui_ViewHomeworkWindow(object):
+    def setupUi(self, ViewHomeworkWindow):
+        self.window = ViewHomeworkWindow
+        self.page = 1
+
+        
+        #Setting Window Up
+        ViewHomeworkWindow.setObjectName(_fromUtf8("ViewHomeworkWindow"))
+        ViewHomeworkWindow.resize(640, 551)
+        self.centralwidget = QtGui.QWidget(ViewHomeworkWindow)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        self.window.setStyleSheet(_fromUtf8("QMainWindow {\n"
+        "background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
+        "QPushButton{background: transparent;"
+        "border: 1px solid black;}"))
+
+        #Homework Label
+        self.myHomeworkLabel = QtGui.QLabel(self.centralwidget)
+        self.myHomeworkLabel.setGeometry(QtCore.QRect(0, 0, 641, 91))
+        self.myHomeworkLabel.setFont(titlefont)
+        self.myHomeworkLabel.setTextFormat(QtCore.Qt.PlainText)
+        self.myHomeworkLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.myHomeworkLabel.setObjectName(_fromUtf8("myHomeworkLabel"))
+
+        #Class Label
+        self.classLabel = QtGui.QLabel(self.centralwidget)
+        self.classLabel.setGeometry(QtCore.QRect(-10, 70, 141, 51))
+        self.classLabel.setFont(labelfont)
+        self.classLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.classLabel.setObjectName(_fromUtf8("classLabel"))
+
+        #Class Combo
+        self.classCombo = QtGui.QComboBox(self.centralwidget)
+        self.classCombo.setGeometry(QtCore.QRect(140, 80, 421, 31))
+        self.classCombo.setObjectName(_fromUtf8("classCombo"))
+
+        if currentUser.type == "Student":
+            c.execute("SELECT classid FROM studentclass WHERE username = :username",
+                      {"username":currentUser.username})
+        else:
+            c.execute("SELECT id FROM classes WHERE teacher = :username",
+                      {"username":currentUser.username})
+
+        self.data = list(c.fetchall())
+        self.classCombo.addItem("All")
+        for classid in self.data:
+            self.classCombo.addItem(classid[0])
+
+        self.classid = self.classCombo.currentText()
+        self.classCombo.activated[str].connect(self.show_homework)
+
+        ##################RESULTS##############################
+
+        ##1st Result
+
+        #Button
+        self.topButton = QtGui.QPushButton(self.centralwidget)
+        self.topButton.setGeometry(QtCore.QRect(80, 130, 481, 51))
+        self.topButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
+        "border: 1px solid black;}"))
+        self.topButton.setText(_fromUtf8(""))
+        self.topButton.setObjectName(_fromUtf8("topButton"))
+
+        #Description
+        self.topDesc = QtGui.QLabel(self.centralwidget)
+        self.topDesc.setGeometry(QtCore.QRect(90, 157, 461, 21))
+        self.topDesc.setFont(labelfont4)
+        self.topDesc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc.setObjectName(_fromUtf8("topDesc"))
+
+        #Title
+        self.topTitle = QtGui.QLabel(self.centralwidget)
+        self.topTitle.setGeometry(QtCore.QRect(90, 137, 461, 21))
+        self.topTitle.setFont(labelfont3)
+        self.topTitle.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle.setObjectName(_fromUtf8("topTitle"))
+
+        self.top1 =  WindowButtons(self.topButton,self.topTitle,self.topDesc,"Homework")
+
+        ##2nd Result
+        self.topTitle_2 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_2.setGeometry(QtCore.QRect(90, 187, 461, 21))
+        self.topTitle_2.setFont(normalfont)
+        self.topTitle_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_2.setObjectName(_fromUtf8("topTitle_2"))
+
+        self.topDesc_2 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_2.setGeometry(QtCore.QRect(90, 207, 461, 21))
+        self.topDesc_2.setFont(labelfont4)
+        self.topDesc_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_2.setObjectName(_fromUtf8("topDesc_2"))
+
+        self.topButton_2 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_2.setGeometry(QtCore.QRect(80, 180, 481, 51))
+        self.topButton_2.setObjectName(_fromUtf8("topButton_2"))
+
+        self.top2 = WindowButtons(self.topButton_2,self.topTitle_2,self.topDesc_2,"Homework")
+
+        ##3rd Result
+        self.topButton_3 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_3.setGeometry(QtCore.QRect(80, 230, 481, 51))
+        self.topButton_3.setObjectName(_fromUtf8("topButton_3"))
+        
+        self.topDesc_3 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_3.setGeometry(QtCore.QRect(90, 257, 461, 21))
+        self.topDesc_3.setFont(labelfont4)
+        self.topDesc_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_3.setObjectName(_fromUtf8("topDesc_3"))
+        
+        self.topTitle_3 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_3.setGeometry(QtCore.QRect(90, 237, 461, 21))
+        self.topTitle_3.setFont(labelfont3)
+        self.topTitle_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_3.setObjectName(_fromUtf8("topTitle_3"))
+
+        self.top3 = WindowButtons(self.topButton_3,self.topTitle_3,self.topDesc_3,"Homework")
     
+        ##4th Result
+        self.topDesc_4 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_4.setGeometry(QtCore.QRect(90, 307, 461, 21))
+        self.topDesc_4.setFont(labelfont4)
+        self.topDesc_4.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_4.setObjectName(_fromUtf8("topDesc_4"))
+
+        self.topTitle_4 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_4.setGeometry(QtCore.QRect(90, 287, 461, 21))
+        self.topTitle_4.setFont(labelfont3)
+        self.topTitle_4.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_4.setObjectName(_fromUtf8("topTitle_4"))
+        
+        self.topButton_4 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_4.setGeometry(QtCore.QRect(80, 280, 481, 51))
+        self.topButton_4.setObjectName(_fromUtf8("topButton_4"))
+
+        self.top4 = WindowButtons(self.topButton_4,self.topTitle_4,self.topDesc_4,"Homework")
+
+        ##5th Result
+        self.topButton_5 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_5.setGeometry(QtCore.QRect(80, 330, 481, 51))
+        self.topButton_5.setObjectName(_fromUtf8("topButton_5"))
+
+        self.topTitle_5 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_5.setGeometry(QtCore.QRect(90, 337, 461, 21))
+        self.topTitle_5.setFont(labelfont3)
+        self.topTitle_5.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_5.setObjectName(_fromUtf8("topTitle_5"))
+
+        self.topDesc_5 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_5.setGeometry(QtCore.QRect(90, 357, 461, 21))
+        self.topDesc_5.setFont(labelfont4)
+        self.topDesc_5.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_5.setObjectName(_fromUtf8("topDesc_5"))
+
+        self.top5 = WindowButtons(self.topButton_5,self.topTitle_5,self.topDesc_5,"Homework")
+        
+        ##6th Result
+        self.topDesc_6 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_6.setGeometry(QtCore.QRect(90, 407, 461, 21))
+        self.topDesc_6.setFont(labelfont4)
+        self.topDesc_6.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_6.setObjectName(_fromUtf8("topDesc_6"))
+
+        self.topButton_6 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_6.setGeometry(QtCore.QRect(80, 380, 481, 51))
+        self.topButton_6.setObjectName(_fromUtf8("topButton_6"))
+
+        self.topTitle_6 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_6.setGeometry(QtCore.QRect(90, 387, 461, 21))
+        self.topTitle_6.setFont(labelfont3)
+        self.topTitle_6.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_6.setObjectName(_fromUtf8("topTitle_6"))
+        
+        self.top6 = WindowButtons(self.topButton_6,self.topTitle_6,self.topDesc_6,"Homework")
+        
+        ##7th Result
+        self.topTitle_7 = QtGui.QLabel(self.centralwidget)
+        self.topTitle_7.setGeometry(QtCore.QRect(90, 437, 461, 21))
+        self.topTitle_7.setFont(labelfont3)
+        self.topTitle_7.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topTitle_7.setObjectName(_fromUtf8("topTitle_7"))
+        
+        self.topDesc_7 = QtGui.QLabel(self.centralwidget)
+        self.topDesc_7.setGeometry(QtCore.QRect(90, 457, 461, 21))
+        self.topDesc_7.setFont(labelfont4)
+        self.topDesc_7.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.topDesc_7.setObjectName(_fromUtf8("topDesc_7"))
+        
+        self.topButton_7 = QtGui.QPushButton(self.centralwidget)
+        self.topButton_7.setGeometry(QtCore.QRect(80, 430, 481, 51))
+        self.topButton_7.setObjectName(_fromUtf8("topButton_7"))
+
+        self.top7 = WindowButtons(self.topButton_7,self.topTitle_7,self.topDesc_7,"Homework")
+
+        #######################################################################
+
+        #New Homework Button
+        self.newHomeworkButton = QtGui.QPushButton(self.centralwidget)
+        self.newHomeworkButton.setGeometry(QtCore.QRect(470, 510, 151, 21))
+        self.newHomeworkButton.setFont(labelfont3)
+        self.newHomeworkButton.setObjectName(_fromUtf8("newHomeworkButton"))
+        self.newHomeworkButton.clicked.connect(self.new_homework)
+        self.newHomeworkButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;border: 0px transparent;}"))
+
+
+        #Previous Button
+        self.previousButton = QtGui.QPushButton(self.centralwidget)
+        self.previousButton.setGeometry(QtCore.QRect(220, 510, 81, 21))
+        self.previousButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;border: 0px transparent;}"))
+        self.previousButton.setObjectName(_fromUtf8("previousButton"))
+        self.previousButton.clicked.connect(self.previous_page)
+        
+        #Next Button
+        self.nextButton = QtGui.QPushButton(self.centralwidget)
+        self.nextButton.setGeometry(QtCore.QRect(350, 510, 81, 21))
+        self.nextButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;border: 0px transparent;}"))
+        self.nextButton.setObjectName(_fromUtf8("nextButton"))
+        self.nextButton.clicked.connect(self.next_page)
+
+        #Page Number
+        self.pageNumber = QtGui.QLabel(self.centralwidget)
+        self.pageNumber.setGeometry(QtCore.QRect(300, 510, 51, 21))
+        self.pageNumber.setFont(labelfont3)
+        self.pageNumber.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        self.pageNumber.setObjectName(_fromUtf8("pageNumber"))
+
+        #Amount Of Results
+        self.amountLabel = QtGui.QLabel(self.centralwidget)
+        self.amountLabel.setGeometry(QtCore.QRect(20, 510, 151, 21))
+        self.amountLabel.setFont(labelfont3)
+        self.amountLabel.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.amountLabel.setObjectName(_fromUtf8("amountLabel"))
+
+        
+        self.topTitle_2.raise_()
+        self.topDesc.raise_()
+        self.topTitle.raise_()
+        self.topDesc_3.raise_()
+        self.topDesc_2.raise_()
+        self.topTitle_3.raise_()
+        self.myHomeworkLabel.raise_()
+        self.classLabel.raise_()
+        self.classCombo.raise_()
+        self.topDesc_6.raise_()
+        self.topTitle_5.raise_()
+        self.topTitle_6.raise_()
+        self.topDesc_4.raise_()
+        self.topDesc_5.raise_()
+        self.topTitle_4.raise_()
+        self.topTitle_7.raise_()
+        self.topDesc_7.raise_()
+        self.newHomeworkButton.raise_()
+        self.amountLabel.raise_()
+        self.previousButton.raise_()
+        self.nextButton.raise_()
+        self.pageNumber.raise_()
+        self.topButton_3.raise_()
+        self.topButton_2.raise_()
+        self.topButton_5.raise_()
+        self.topButton_7.raise_()
+        self.topButton_4.raise_()
+        self.topButton_6.raise_()
+        self.topButton.raise_()
+        ViewHomeworkWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(ViewHomeworkWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        ViewHomeworkWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(ViewHomeworkWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        ViewHomeworkWindow.setStatusBar(self.statusbar)
+        self.search()
+        self.retranslateUi(ViewHomeworkWindow)
+        QtCore.QMetaObject.connectSlotsByName(ViewHomeworkWindow)
+        
+
+    def retranslateUi(self, ViewHomeworkWindow):
+
+        if len(self.homeworks) >= 1+((self.page-1)*7):
+            if len(self.homeworks[0+(self.page-1)*7][3]) > 45:
+                   self.homeworks[0+(self.page-1)*7][3]= self.homeworks[0+(self.page-1)*7][3][:42]+"..."
+            self.top1.retranslateUi(self.homeworks[0+(self.page-1)*7][3],
+                                    self.homeworks[0+(self.page-1)*7][1] + " - Due "+self.homeworks[0+(self.page-1)*7][2],
+                                    self.homeworks[0+(self.page-1)*7][0])
+            self.top1.show_all() 
+        else:
+            self.top1.hide_all()
+
+
+        if len(self.homeworks) >= 2+((self.page-1)*7):
+            if len(self.homeworks[1+(self.page-1)*7][3]) > 45:
+                   self.homeworks[1+(self.page-1)*7][3]= self.homeworks[1+(self.page-1)*7][3][:42]+"..."
+            self.top2.retranslateUi(self.homeworks[1+(self.page-1)*7][3],
+                                    self.homeworks[1+(self.page-1)*7][1] + " - Due "+self.homeworks[1+(self.page-1)*7][2],
+                                    self.homeworks[1+(self.page-1)*7][0])
+            self.top2.show_all() 
+        else:
+            self.top2.hide_all()
+
+        if len(self.homeworks) >= 3+((self.page-1)*7):
+            if len(self.homeworks[2+(self.page-1)*7][3]) > 45:
+                   self.homeworks[2+(self.page-1)*7][3]= self.homeworks[2+(self.page-1)*7][3][:42]+"..."
+            self.top3.retranslateUi(self.homeworks[2+(self.page-1)*7][3],
+                                    self.homeworks[2+(self.page-1)*7][1] + " - Due "+self.homeworks[2+(self.page-1)*7][2],
+                                    self.homeworks[2+(self.page-1)*7][0])
+            self.top3.show_all() 
+        else:
+            self.top3.hide_all()
+
+
+        if len(self.homeworks) >= 4+((self.page-1)*7):
+            if len(self.homeworks[3+(self.page-1)*7][3]) > 45:
+                   self.homeworks[3+(self.page-1)*7][3]= self.homeworks[3+(self.page-1)*7][3][:42]+"..."
+            self.top4.retranslateUi(self.homeworks[3+(self.page-1)*7][3],
+                                    self.homeworks[3+(self.page-1)*7][1] + " - Due "+self.homeworks[3+(self.page-1)*7][2],
+                                    self.homeworks[3+(self.page-1)*7][0])
+            self.top4.show_all() 
+        else:
+            self.top4.hide_all()
+
+
+        if len(self.homeworks) >= 5+((self.page-1)*7):
+            if len(self.homeworks[4+(self.page-1)*7][3]) > 45:
+                   self.homeworks[4+(self.page-1)*7][3]= self.homeworks[4+(self.page-1)*7][3][:42]+"..."
+            self.top5.retranslateUi(self.homeworks[4+(self.page-1)*7][3],
+                                    self.homeworks[4+(self.page-1)*7][1] + " - Due "+self.homeworks[4+(self.page-1)*7][2],
+                                    self.homeworks[4+(self.page-1)*7][0])
+            self.top5.show_all() 
+        else:
+            self.top5.hide_all()
+
+
+        if len(self.homeworks) >= 6+((self.page-1)*7):
+            if len(self.homeworks[5+(self.page-1)*7][3]) > 45:
+                   self.homeworks[5+(self.page-1)*7][3]= self.homeworks[5+(self.page-1)*7][3][:42]+"..."
+            self.top6.retranslateUi(self.homeworks[5+(self.page-1)*7][3],
+                                    self.homeworks[5+(self.page-1)*7][1] + " - Due "+self.homeworks[5+(self.page-1)*7][2],
+                                    self.homeworks[5+(self.page-1)*7][0])
+            self.top6.show_all() 
+        else:
+            self.top6.hide_all()
+
+
+        if len(self.homeworks) >= 7+((self.page-1)*7):
+            if len(self.homeworks[6+(self.page-1)*7][3]) > 45:
+                   self.homeworks[6+(self.page-1)*7][3]= self.homeworks[6+(self.page-1)*7][3][:42]+"..."
+            self.top7.retranslateUi(self.homeworks[6+(self.page-1)*7][3],
+                                    self.homeworks[6+(self.page-1)*7][1] + " - Due "+self.homeworks[6+(self.page-1)*7][2],
+                                    self.homeworks[6+(self.page-1)*7][0])
+            self.top7.show_all() 
+        else:
+            self.top7.hide_all()        
+        
+                
+        ViewHomeworkWindow.setWindowTitle(_translate("ViewHomeworkWindow", "View Homework", None))
+        self.myHomeworkLabel.setText(_translate("ViewHomeworkWindow", "MY HOMEWORK", None))
+        self.classLabel.setText(_translate("ViewHomeworkWindow", "CLASS:", None))
+        self.newHomeworkButton.setText(_translate("ViewHomeworkWindow", "Add New Homework", None))
+        self.amountLabel.setText(_translate("ViewHomeworkWindow", "10 Results (2 Pages)", None))
+        self.previousButton.setText(_translate("ViewHomeworkWindow", "Previous", None))
+        self.nextButton.setText(_translate("ViewHomeworkWindow", "Next", None))
+        self.pageNumber.setText(_translate("ViewHomeworkWindow", "1", None))
+
+    def previous_page(self):
+        pass
+    def next_page(self):
+        pass
+    def new_homework(self):
+        pass
+
+    def show_homework(self,text):
+        self.classid = text
+        self.search()
+        self.retranslateUi(self.window)
+
+    def search(self):
+        if self.classid != "All":
+            c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":self.classid})
+            temp = c.fetchall()
+            if temp != None:
+                data = list(temp)
+            else:
+                data = []
+            
+        else:
+            data = []
+            for classid in self.data:
+                c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":classid[0]})
+                temp = c.fetchall()
+                if temp != None:
+                    data.extend(list(temp))
+                    
+        data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%d-%m-%Y")))
+        self.homeworks = data
+
+
+
 #Use this as MainWindow for the close event popup window
 class EditWindow(QtGui.QMainWindow):
     def closeEvent(self,event):
