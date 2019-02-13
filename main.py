@@ -1,3 +1,21 @@
+#TO DO LIST
+"""
+1 - Add grading window
+2 - Add grades to database
+3 - Send messages
+4 - Search subjects and classes
+5 - Behaviour and achievement points
+6 - Clean up homescreen
+7 - Add save function for homework
+
+
+"""
+
+
+
+
+
+
 #These are all the libraries that are being used in my program.
 from PyQt4 import QtCore, QtGui #PyQt4 is the library I use to create the entire GUI and interactions with it.
 #import MySQLdb
@@ -99,6 +117,12 @@ normalfont.setFamily(_fromUtf8("Gadugi"))
 normalfont.setPointSize(12)
 normalfont.setBold(False)
 normalfont.setWeight(50)
+
+smalltitlefont = QtGui.QFont()
+smalltitlefont.setFamily(_fromUtf8("Gadugi"))
+smalltitlefont.setPointSize(15)
+smalltitlefont.setBold(True)
+smalltitlefont.setWeight(75)
 
 
 regex=QtCore.QRegExp("[a-z-A-Z]+")
@@ -688,7 +712,7 @@ class Ui_WelcomeWindow(object):
     def view_users(self):
         self.viewUserPage = EditWindow()
         self.viewUserUi = Ui_SearchUsers()
-        self.viewUserUi.setupUi(self.viewUserPage)
+        self.viewUserUi.setupUi(self.viewUserPage,"Search",None)
         self.viewUserPage.show()
 
 
@@ -857,6 +881,8 @@ class Ui_PasswordWindow(object):
         self.saveBtn.setFont(labelfont)
         self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
         self.saveBtn.clicked.connect(self.change_pass)
+
+        
 
 
         
@@ -1707,9 +1733,10 @@ class Ui_EditUserWindow(object):
 
 
 class Ui_SearchUsers(object):
-    def setupUi(self, SearchUsers):
+    def setupUi(self, SearchUsers,typeOfWindow,homework):
 
-
+        self.typeOfWindow = typeOfWindow
+        self.homework = homework
         self.data = []
         self.page = 1
         self.window = SearchUsers
@@ -1813,6 +1840,24 @@ class Ui_SearchUsers(object):
         self.subjectCombo.setGeometry(QtCore.QRect(740, 90, 121, 31))
         self.subjectCombo.setObjectName(_fromUtf8("subjectCombo"))
 
+        if self.typeOfWindow == "Homework":
+            self.subjectCombo.addItem("Not Completed")
+            self.subjectCombo.addItem("Completed")
+            self.subjectCombo.addItem("A*")
+            self.subjectCombo.addItem("A")
+            self.subjectCombo.addItem("B")
+            self.subjectCombo.addItem("C")
+            self.subjectCombo.addItem("D")
+            self.subjectCombo.addItem("E")
+            self.subjectCombo.addItem("F")
+            self.subjectCombo.addItem("U")
+        else:
+            c.execute("SELECT fullname FROM subjects")
+            data = c.fetchall()
+            for i in range(len(data)):
+                self.subjectCombo.addItem(data[i][0])
+
+
 
         ## CLASS FILTER
         self.classCheck = QtGui.QCheckBox(self.centralwidget)
@@ -1822,6 +1867,11 @@ class Ui_SearchUsers(object):
         self.classCombo = QtGui.QComboBox(self.centralwidget)
         self.classCombo.setGeometry(QtCore.QRect(740, 150, 121, 31))
         self.classCombo.setObjectName(_fromUtf8("classCombo"))
+
+        c.execute("SELECT id FROM classes")
+        data = c.fetchall()
+        for i in range(len(data)):
+            self.classCombo.addItem(data[i][0])
 
 
         ## SORTING RESULTS
@@ -1859,6 +1909,12 @@ class Ui_SearchUsers(object):
         self.searchButton.setFont(font)
         self.searchButton.setObjectName(_fromUtf8("searchButton"))
         self.searchButton.clicked.connect(self.search)
+
+        if self.typeOfWindow == "Homework":
+            self.classCheck.hide()
+            self.classCombo.hide()
+            self.yearCombo.hide()
+            self.yearCheck.hide()
 
         ##############################################################################################
 
@@ -1903,7 +1959,7 @@ class Ui_SearchUsers(object):
         self.resultType.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.resultType.setObjectName(_fromUtf8("resultType"))
 
-        self.result1 = SearchBox(self.resultRectangle,self.resultType,self.profilePic,self.resultButton,self.resultTitle)
+        self.result1 = SearchBox(self.resultRectangle,self.resultType,self.profilePic,self.resultButton,self.resultTitle,self.typeOfWindow,self.homework)
         
         ## RESULT 2
 
@@ -1940,7 +1996,7 @@ class Ui_SearchUsers(object):
         self.resultRectangle_2.setText(_fromUtf8(""))
         self.resultRectangle_2.setObjectName(_fromUtf8("resultRectangle_2"))
 
-        self.result2 = SearchBox(self.resultRectangle_2,self.resultType_2,self.profilePic_2,self.resultButton_2,self.resultTitle_2)
+        self.result2 = SearchBox(self.resultRectangle_2,self.resultType_2,self.profilePic_2,self.resultButton_2,self.resultTitle_2,self.typeOfWindow,self.homework)
 
 
         ## RESULT 3
@@ -1978,7 +2034,7 @@ class Ui_SearchUsers(object):
         self.profilePic_3.setScaledContents(True)
         self.profilePic_3.setObjectName(_fromUtf8("profilePic_3"))
 
-        self.result3 = SearchBox(self.resultRectangle_3,self.resultType_3,self.profilePic_3,self.resultButton_3,self.resultTitle_3)
+        self.result3 = SearchBox(self.resultRectangle_3,self.resultType_3,self.profilePic_3,self.resultButton_3,self.resultTitle_3,self.typeOfWindow,self.homework)
 
         ## RESULT 4
         self.resultTitle_4 = QtGui.QLabel(self.centralwidget)
@@ -2014,7 +2070,7 @@ class Ui_SearchUsers(object):
         self.resultType_4.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.resultType_4.setObjectName(_fromUtf8("resultType_4"))
 
-        self.result4 = SearchBox(self.resultRectangle_4,self.resultType_4,self.profilePic_4,self.resultButton_4,self.resultTitle_4)
+        self.result4 = SearchBox(self.resultRectangle_4,self.resultType_4,self.profilePic_4,self.resultButton_4,self.resultTitle_4,self.typeOfWindow,self.homework)
 
         ## RESULT 5
         self.resultRectangle_5 = QtGui.QLabel(self.centralwidget)
@@ -2050,7 +2106,7 @@ class Ui_SearchUsers(object):
         self.resultButton_5.setText(_fromUtf8(""))
         self.resultButton_5.setObjectName(_fromUtf8("resultButton_5"))
 
-        self.result5 = SearchBox(self.resultRectangle_5,self.resultType_5,self.profilePic_5,self.resultButton_5,self.resultTitle_5)
+        self.result5 = SearchBox(self.resultRectangle_5,self.resultType_5,self.profilePic_5,self.resultButton_5,self.resultTitle_5,self.typeOfWindow,self.homework)
 
         ## RESULT 6
         self.resultButton_6 = QtGui.QPushButton(self.centralwidget)
@@ -2086,7 +2142,7 @@ class Ui_SearchUsers(object):
         self.resultType_6.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.resultType_6.setObjectName(_fromUtf8("resultType_6"))
 
-        self.result6 = SearchBox(self.resultRectangle_6,self.resultType_6,self.profilePic_6,self.resultButton_6,self.resultTitle_6)
+        self.result6 = SearchBox(self.resultRectangle_6,self.resultType_6,self.profilePic_6,self.resultButton_6,self.resultTitle_6,self.typeOfWindow,self.homework)
 
         ## RESULT 7
         self.resultRectangle_7 = QtGui.QLabel(self.centralwidget)
@@ -2122,7 +2178,7 @@ class Ui_SearchUsers(object):
         self.resultTitle_7.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.resultTitle_7.setObjectName(_fromUtf8("resultTitle_7"))
 
-        self.result7 = SearchBox(self.resultRectangle_7,self.resultType_7,self.profilePic_7,self.resultButton_7,self.resultTitle_7)
+        self.result7 = SearchBox(self.resultRectangle_7,self.resultType_7,self.profilePic_7,self.resultButton_7,self.resultTitle_7,self.typeOfWindow,self.homework)
 
         ################## BOTTOM OF PAGE INFO ####################################
 
@@ -2222,11 +2278,6 @@ class Ui_SearchUsers(object):
         self.resultButton_7.raise_()
         self.resultTitle_7.raise_()
 
-        
-
-
-
-
 
         
         SearchUsers.setCentralWidget(self.centralwidget)
@@ -2301,11 +2352,14 @@ class Ui_SearchUsers(object):
         self.usernameLabel.setText(_translate("SearchUsers", "USERNAME", None))
         self.usernameCheck.setText(_translate("SearchUsers", "Filter by username?", None))
         self.typeCheck.setText(_translate("SearchUsers", "Filter by type of user?", None))
-        self.subjectCheck.setText(_translate("SearchUsers", "Filter by subject?", None))
+        if self.typeOfWindow == "Homework":
+            self.subjectCheck.setText(_translate("SearchUsers", "Filter by grade?", None))
+        else:
+            self.subjectCheck.setText(_translate("SearchUsers", "Filter by subject?", None))
         self.classCheck.setText(_translate("SearchUsers", "Filter by class?", None))
         self.sortLabel.setText(_translate("SearchUsers", "Sort By:", None))
         self.searchButton.setText(_translate("SearchUsers", "SEARCH", None))
-        self.amountLabel.setText(_translate("SearchUsers", str(len(self.data)) + " Results (" + str((len(self.data)+1)//7 )+ " Pages)", None))
+        self.amountLabel.setText(_translate("SearchUsers", str(len(self.data)) + " Results (" + str((len(self.data))//7+1 )+ " Pages)", None))
         self.pageNumber.setText(_translate("SearchUsers", str(self.page), None))
         self.previousButton.setText(_translate("SearchUsers", "Previous", None))
         self.window.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
@@ -2315,7 +2369,7 @@ class Ui_SearchUsers(object):
             self.previousButton.setEnabled(True)
         self.nextButton.setText(_translate("SearchUsers", "Next", None))
         
-        if self.page < (len(self.data)+1)//7:
+        if self.page < (len(self.data)+1)//7+1:
             self.nextButton.setEnabled(True)
         else:
             self.nextButton.setEnabled(False)
@@ -2331,23 +2385,30 @@ class Ui_SearchUsers(object):
 
     def search(self):
 
-        
-        c.execute("SELECT * FROM USERS WHERE TYPE = 'Admin' OR TYPE = 'Teacher'")
-        data1 = c.fetchall()
-        c.execute("SELECT * FROM USERS,STUDENT WHERE USERS.USERNAME = STUDENT.USERNAME")
-        data2 = c.fetchall()
-        
-        c.execute("SELECT teacher,subject,id FROM classes")
-        classes = c.fetchall()
+        if self.typeOfWindow == "Search":
+            c.execute("SELECT * FROM USERS WHERE TYPE = 'Admin' OR TYPE = 'Teacher'")
+            data1 = c.fetchall()
+            c.execute("SELECT * FROM USERS,STUDENT WHERE USERS.USERNAME = STUDENT.USERNAME")
+            data2 = c.fetchall()
+            
+            self.data = []
+            for i in range(len(data1)):
+                #Converting the tuples to a list
+                self.data.append(list(data1[i]))
 
-        self.data = []
-        for i in range(len(data1)):
-            #Converting the tuples to a list
-            self.data.append(list(data1[i]))
+            for i in range(len(data2)):
+                #Converting the tuples to a list
+                self.data.append(list(data2[i]))
 
-        for i in range(len(data2)):
-            #Converting the tuples to a list
-            self.data.append(list(data2[i]))
+
+        elif self.typeOfWindow == "Homework":
+            c.execute("SELECT * FROM USERS,"+self.homework.classId + " WHERE USERS.USERNAME = "+self.homework.classId+".Student")
+            data = c.fetchall()
+            self.data = []
+            for i in range(len(data)):
+                self.data.append(list(data[i]))
+
+
     
 
         #Filter by full name
@@ -2403,21 +2464,61 @@ class Ui_SearchUsers(object):
 
         if self.subjectCheck.isChecked():
             filtered = []
-            if self.typeCheck.isChecked():
-                if typeOfUser == "Admin":
-                    QtGui.QMessageBox.question(self.window,"Error has occurred","Search Unsuccessful: " + typeOfUser + "does not have attribute 'Subject'",
-                        QtGui.QMessageBox.Ok)
-                    return
+            if self.typeOfWindow == "Search":
+                if self.typeCheck.isChecked():
+                    if typeOfUser == "Admin":
+                        QtGui.QMessageBox.question(self.window,"Error has occurred","Search Unsuccessful: " + typeOfUser + "does not have attribute 'Subject'",
+                            QtGui.QMessageBox.Ok)
+                        return
 
-            ### ADD SUBJECTS
+                c.execute("SELECT id,teacher FROM classes WHERE subject = :subject",{"subject":self.subjectCombo.currentText()})
+                classes = c.fetchall()
+                users = []
+                for i in range(len(classes)):
+                    c.execute("SELECT student FROM "+classes[i][0])
+                    temp = c.fetchall()
+                    students = []
+                    if temp != None:
+                        for i in range(len(temp)):
+                            students.append(temp[i][0])
+                    users.extend(students)
+                for i in range(len(self.data)):
+                    if self.data[i][2] in users:
+                        filtered.append(self.data[i][2])
+                teachers = []
+                for i in range(len(classes)):
+                    teachers.append(classes[i][2])
+                for i in range(len(self.data)):
+                    if self.data[i][2] in teachers:
+                        filtered.append(self.data)
+            else:
+                grade = self.subjectCombo.currentText()
 
-            ## NEED TO ADD STUDENTS ASWELL
-            for lesson in range(len(classes)):
-                for teacher in range(len(self.data)):                    
-                    if self.data[i][2] == classes[lesson][0] and self.data[i] not in filtered:
+                if grade == "Not Completed":
+                    #c.execute("SELECT Student FROM "+self.homework.classId+" WHERE :homeworkId is Null",
+                              #{"homeworkId":self.homework.homeworkId})
+                    c.execute("SELECT Student,"+ self.homework.homeworkId+" FROM "+self.homework.classId)
+                    data = c.fetchall()
+                    notcompleted = []
+                    for i in range(len(data)):
+                        if data[i][1] == None:
+                            notcompleted.append(data[i][0])
+                    for i in range(len(self.data)):
+                        if self.data[i][2] in notcompleted:
+                            filtered.append(self.data[i])
+                else:
+                    c.execute("SELECT Student FROM "+self.homework.classId+" WHERE :homeworkId = :grade",
+                          {"homeworkId":self.homework.homeworkId,"grade":grade})
+                data = c.fetchall()
+                students = []
+                for i in range(len(data)):
+                    students.append(data[i][0])
+                for i in range(len(self.data)):
+                    if self.data[i][2] in students:
                         filtered.append(self.data[i])
-            self.data = filtered
-            
+
+            self.data = filtered               
+                    
 
         if self.classCheck.isChecked():
             filtered = []
@@ -2426,12 +2527,21 @@ class Ui_SearchUsers(object):
                     QtGui.QMessageBox.question(self.window,"Error has occurred","Search Unsuccessful: " + typeOfUser + "does not have attribute 'Class'",
                         QtGui.QMessageBox.Ok)
                     return
-            for user in range(len(self.data)):
-                for lesson in range(len(classes)):
-                    if self.data[i][2] == classes[lesson][0] and self.data[i] not in filtered:
-                        filtered.append(self.data[i])
+            c.execute("SELECT student FROM "+classes[i][0])
+            temp = c.fetchall()
+            students = []
+            if temp != None:
+                for i in range(len(temp)):
+                    students.append(temp[i][0])
+                for i in range(len(self.data)):
+                    if self.data[i][2] in students:
+                        filtered.append(self.data)
+            c.execute("SELECT teacher FROM classes WHERE id = :id",{"id":self.classCombo.currentText()})
+            data = c.fetchall()
+            for i in range(len(self.data)):
+                if self.data[i][2] == data[0][0]:
+                    filtered.append(self.data[i])
 
-                    ##DOESNT WORK FOR STUDENTS YET
             self.data = filtered
 
         if "Name" in self.sortCombo.currentText():
@@ -2447,12 +2557,14 @@ class Ui_SearchUsers(object):
 
 class SearchBox():
     
-    def __init__(self,rectangle,resultType,pic,button,name):
+    def __init__(self,rectangle,resultType,pic,button,name,typeOfSearch,homework):
         self.rectangle = rectangle
         self.type = resultType
         self.pic = pic
         self.button = button
         self.name = name
+        self.typeOfSearch = typeOfSearch
+        self.homework = homework
 
         self.button.clicked.connect(self.open_window)
 
@@ -2460,6 +2572,8 @@ class SearchBox():
 
     def retranslateUi(self,firstName,lastName,username,resultType,pic):
         self.username = username
+        self.first = firstName
+        self.last = lastName
         self.type.setText(_translate("SearchUsers", resultType, None))
         self.name.setText(_translate("SearchUsers", firstName + " " + lastName + "(" + username
                                               + ")", None))
@@ -2482,6 +2596,11 @@ class SearchBox():
         self.name.show()
 
     def open_window(self):
+
+        if self.typeOfSearch == "Homework":
+            self.edit_grade()
+            return
+        
         c.execute("SELECT * FROM users WHERE username=:username ORDER BY username ASC",
                   {"username":self.username})
         
@@ -2500,8 +2619,13 @@ class SearchBox():
             if self.user.type == "Teacher":                   
                 self.edit_teacher()
 
-            
+    def edit_grade(self):
+        self.editGradePage = EditWindow()
+        self.editGradeUi = Ui_GradeWindow()
+        self.editGradeUi.setupUi(self.editGradePage,self.homework,self.username,self.first,self.last)
+        self.editGradePage.show()
 
+                                    
     def edit_admin(self):
         self.createAdminPage = EditWindow()
         self.createAdminUi = Ui_EditUserWindow()
@@ -2519,6 +2643,9 @@ class SearchBox():
         self.createStudentUi = Ui_EditUserWindow()
         self.createStudentUi.setupUi(self.createStudentPage,"Student",self.user)
         self.createStudentPage.show()
+
+    def open_grade_window(self):
+        pass
 
 
 class Ui_ClassListWindow(object):
@@ -3008,6 +3135,12 @@ class Ui_HomeWorkWindow(object):
             self.saveBtn.clicked.connect(self.create)
         else:
             self.saveBtn.clicked.connect(self.edit)
+            #Grades Button
+            self.gradesBtn = QtGui.QPushButton(self.centralwidget)
+            self.gradesBtn.setGeometry(QtCore.QRect(550, 330, 75, 51))
+            self.gradesBtn.setFont(labelfont)
+            self.gradesBtn.setObjectName(_fromUtf8("gradesBtn"))
+            self.gradesBtn.clicked.connect(self.grades_window)
 
         #Full Name Button
         self.classLabel = QtGui.QLabel(self.centralwidget)
@@ -3134,6 +3267,7 @@ class Ui_HomeWorkWindow(object):
                     chosen = True
         c.execute("INSERT INTO homework VALUES (:homeworkid,:classid,:duedate,:title,:description)",
                   {"homeworkid":homeworkId,"classid":classid,"duedate":duedate,"title":title,"description":desc})
+        c.execute("ALTER TABLE "+classid+" ADD "+ homeworkId+ " text;")
         conn.commit()
         self.window.hide()
         self.newWindow = EditWindow()
@@ -3145,6 +3279,12 @@ class Ui_HomeWorkWindow(object):
 
     def edit(self):
         pass
+
+    def grades_window(self):
+        self.searchPage = EditWindow()
+        self.SearchUi = Ui_SearchUsers()
+        self.SearchUi.setupUi(self.searchPage,"Homework",self.homework)
+        self.searchPage.show()
 
 
 class Ui_ViewHomeworkWindow(object):
@@ -3343,12 +3483,14 @@ class Ui_ViewHomeworkWindow(object):
         #######################################################################
 
         #New Homework Button
-        self.newHomeworkButton = QtGui.QPushButton(self.centralwidget)
-        self.newHomeworkButton.setGeometry(QtCore.QRect(470, 510, 151, 21))
-        self.newHomeworkButton.setFont(labelfont3)
-        self.newHomeworkButton.setObjectName(_fromUtf8("newHomeworkButton"))
-        self.newHomeworkButton.clicked.connect(self.new_homework)
-        self.newHomeworkButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;border: 0px transparent;}"))
+        if currentUser.type == "Teacher":
+            self.newHomeworkButton = QtGui.QPushButton(self.centralwidget)
+            self.newHomeworkButton.setGeometry(QtCore.QRect(470, 510, 151, 21))
+            self.newHomeworkButton.setFont(labelfont3)
+            self.newHomeworkButton.setObjectName(_fromUtf8("newHomeworkButton"))
+            self.newHomeworkButton.clicked.connect(self.new_homework)
+            self.newHomeworkButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;border: 0px transparent;}"))
+            self.newHomeworkButton.clicked.connect(self.new_homework)
 
 
         #Previous Button
@@ -3498,23 +3640,38 @@ class Ui_ViewHomeworkWindow(object):
             self.top7.show_all() 
         else:
             self.top7.hide_all()        
-        
+
+        if self.page == 1:
+            self.previousButton.setEnabled(False)
+        else:
+            self.previousButton.setEnabled(True)
+
+        if self.page < (len(self.homeworks)//7+1):
+            self.nextButton.setEnabled(True)
+        else:
+            self.nextButton.setEnabled(False)
                 
         ViewHomeworkWindow.setWindowTitle(_translate("ViewHomeworkWindow", "View Homework", None))
         self.myHomeworkLabel.setText(_translate("ViewHomeworkWindow", "MY HOMEWORK", None))
         self.classLabel.setText(_translate("ViewHomeworkWindow", "CLASS:", None))
-        self.newHomeworkButton.setText(_translate("ViewHomeworkWindow", "Add New Homework", None))
-        self.amountLabel.setText(_translate("ViewHomeworkWindow", "10 Results (2 Pages)", None))
+        if currentUser.type == "Teacher":
+            self.newHomeworkButton.setText(_translate("ViewHomeworkWindow", "Add New Homework", None))
+        self.amountLabel.setText(_translate("ViewHomeworkWindow",str(len(self.homeworks))+" Results ("+str((len(self.homeworks))//7+1) +" Pages)", None))
         self.previousButton.setText(_translate("ViewHomeworkWindow", "Previous", None))
         self.nextButton.setText(_translate("ViewHomeworkWindow", "Next", None))
-        self.pageNumber.setText(_translate("ViewHomeworkWindow", "1", None))
+        self.pageNumber.setText(_translate("ViewHomeworkWindow", str(self.page), None))
 
     def previous_page(self):
-        pass
+        self.page -= 1
+        self.retranslateUi(self.window)
     def next_page(self):
-        pass
+        self.page += 1
+        self.retranslateUi(self.window)
     def new_homework(self):
-        pass
+        self.homeworkPage = EditWindow()
+        self.homeworkui = Ui_HomeWorkWindow()
+        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","01/01/2001","NULL","NULL"))
+        self.homeworkPage.show()
 
     def show_homework(self,text):
         self.classid = text
@@ -3541,7 +3698,94 @@ class Ui_ViewHomeworkWindow(object):
         data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%d-%m-%Y")))
         self.homeworks = data
 
+class Ui_GradeWindow(object):
+    def setupUi(self, GradeWindow,homework,username,first,last):
+        self.window = GradeWindow
+        self.username = username
+        self.homework = homework
+        self.first = first
+        self.last = last
+        c.execute("SELECT "+self.homework.homeworkId+" FROM "+self.homework.classId+" WHERE Student = '"+self.username+"'")
+        data = c.fetchall()
+        grade = data[0][0]
+        if grade == None:
+            grade = "Not Completed"
+            
+        
+        #Setting window up
+        GradeWindow.setObjectName(_fromUtf8("GradeWindow"))
+        GradeWindow.resize(304, 228)
+        self.centralwidget = QtGui.QWidget(GradeWindow)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        GradeWindow.setStyleSheet(css)
 
+        #Label of users name
+        self.nameLabel = QtGui.QLabel(self.centralwidget)
+        self.nameLabel.setGeometry(QtCore.QRect(0, 10, 301, 51))
+        self.nameLabel.setFont(smalltitlefont)
+        self.nameLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.nameLabel.setObjectName(_fromUtf8("nameLabel"))
+
+        #Grade combo
+        self.gradeCombo = QtGui.QComboBox(self.centralwidget)
+        self.gradeCombo.setGeometry(QtCore.QRect(130, 80, 101, 31))
+        self.gradeCombo.setObjectName(_fromUtf8("gradeCombo"))
+        self.gradeCombo.addItem("Not Completed")
+        self.gradeCombo.addItem("Completed")
+        self.gradeCombo.addItem("A*")
+        self.gradeCombo.addItem("A")
+        self.gradeCombo.addItem("B")
+        self.gradeCombo.addItem("C")
+        self.gradeCombo.addItem("D")
+        self.gradeCombo.addItem("E")
+        self.gradeCombo.addItem("F")
+        self.gradeCombo.addItem("U")
+        index = self.gradeCombo.findText(grade, QtCore.Qt.MatchFixedString)
+        if index >= 0:
+            self.gradeCombo.setCurrentIndex(index)
+
+
+
+        #Grade Label
+        self.gradeLabel = QtGui.QLabel(self.centralwidget)
+        self.gradeLabel.setGeometry(QtCore.QRect(-20, 70, 141, 51))
+        self.gradeLabel.setFont(labelfont)
+        self.gradeLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.gradeLabel.setObjectName(_fromUtf8("gradeLabel"))
+
+        #Save Button
+        self.saveBtn = QtGui.QPushButton(self.centralwidget)
+        self.saveBtn.setGeometry(QtCore.QRect(210, 140, 75, 27))
+        self.saveBtn.setFont(labelfont)
+        self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
+        self.saveBtn.clicked.connect(self.save)
+        
+        
+        GradeWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(GradeWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 304, 21))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        GradeWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(GradeWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        GradeWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(GradeWindow)
+        QtCore.QMetaObject.connectSlotsByName(GradeWindow)
+
+    def retranslateUi(self, GradeWindow):
+        GradeWindow.setWindowTitle(_translate("GradeWindow", "Grade Window", None))
+        self.nameLabel.setText(_translate("GradeWindow", self.first + " " + self.last, None))
+        self.gradeLabel.setText(_translate("GradeWindow", "GRADE:", None))
+
+    def save(self):
+        grade = self.gradeCombo.currentText()
+        if grade != "Not Completed":
+            c.execute("UPDATE "+self.homework.classId+" SET "+self.homework.homeworkId+" = :grade WHERE student = :student",
+                  {"grade":grade,"student":self.username})
+            conn.commit()
+            QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                    QtGui.QMessageBox.Ok)
 
 #Use this as MainWindow for the close event popup window
 class EditWindow(QtGui.QMainWindow):
