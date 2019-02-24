@@ -1,8 +1,6 @@
 #TO DO LIST
 """
-1 - Add grading window
-2 - Add grades to database
-3 - Send messages
+3 - Student Homework
 4 - Search subjects and classes
 5 - Behaviour and achievement points
 6 - Clean up homescreen
@@ -124,6 +122,13 @@ smalltitlefont.setPointSize(15)
 smalltitlefont.setBold(True)
 smalltitlefont.setWeight(75)
 
+typefont = QtGui.QFont()
+typefont.setFamily(_fromUtf8("MS Shell Dlg 2"))
+typefont.setPointSize(12)
+
+numberfont = QtGui.QFont()
+numberfont.setFamily(_fromUtf8("OCR A Std"))
+numberfont.setPointSize(26)
 
 regex=QtCore.QRegExp("[a-z-A-Z]+")
 lettersvalidator = QtGui.QRegExpValidator(regex)
@@ -292,12 +297,12 @@ class Ui_MainWindow(object):
             global currentUser
 
             if data[6] == "Student":
-                c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":currentUser.username})
+                c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":self.username})
                 yeargroup = c.fetchone()
-                currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8])
+                currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],yeargroup,data[7])
             else:   
                 currentUser = User(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
-                self.open_user()
+            self.open_user()
                 
                     
                 #MainWindow.hide()
@@ -318,7 +323,11 @@ class Ui_WelcomeWindow(object):
         self.window = MainWindow
         #Creating Main Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(640, 593)
+        if currentUser.type == "Admin":
+            height = 185
+        else:
+            height = 593
+        MainWindow.resize(640, height)
         MainWindow.setStyleSheet(_fromUtf8("QMainWindow {\n"
 "background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
 "QPushButton{background: transparent;"
@@ -566,13 +575,26 @@ class Ui_WelcomeWindow(object):
             self.menuHomework = QtGui.QMenu(self.menubar)
             self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
             self.menubar.addAction(self.menuHomework.menuAction())
+
+            self.viewHomework = QtGui.QAction(MainWindow)
+            self.viewHomework.setObjectName(_fromUtf8("viewHomework"))
+            self.viewHomework.setStatusTip("View my homework")
+            self.menuHomework.addAction(self.viewHomework)
+            self.viewHomework.triggered.connect(self.view_homework)                
+
         if currentUser.type != "Student":
             self.menuSubjects = QtGui.QMenu(self.menubar)
             self.menuSubjects.setObjectName(_fromUtf8("menuSubjects"))
             self.menuUsers = QtGui.QMenu(self.menubar)
             self.menuUsers.setObjectName(_fromUtf8("menuUsers"))
+            self.menubar.addAction(self.menuUsers.menuAction())
 
-
+        if currentUser.type == "Teacher":
+            self.addHomework = QtGui.QAction(MainWindow)
+            self.addHomework.setObjectName(_fromUtf8("addHomework"))
+            self.addHomework.setStatusTip("Create a new homework")
+            self.menuHomework.addAction(self.addHomework)
+            self.addHomework.triggered.connect(self.create_homework)
 
                             #View Users
             self.viewUsers = QtGui.QAction(MainWindow)
@@ -621,22 +643,8 @@ class Ui_WelcomeWindow(object):
                 self.menuUsers.addAction(self.viewUsers)
                 self.menuClasses.addAction(self.addClass)
 
-            else:
-                self.addHomework = QtGui.QAction(MainWindow)
-                self.addHomework.setObjectName(_fromUtf8("addHomework"))
-                self.addHomework.setStatusTip("Create a new homework")
-                self.menuHomework.addAction(self.addHomework)
-                self.addHomework.triggered.connect(self.create_homework)
-
-                self.viewHomework = QtGui.QAction(MainWindow)
-                self.viewHomework.setObjectName(_fromUtf8("viewHomework"))
-                self.viewHomework.setStatusTip("View my homework")
-                self.menuHomework.addAction(self.viewHomework)
-                self.viewHomework.triggered.connect(self.view_homework)                
-
             self.menubar.addAction(self.menuSubjects.menuAction())
             self.menubar.addAction(self.menuClasses.menuAction())
-            self.menubar.addAction(self.menuUsers.menuAction())
             
                 
 
@@ -689,7 +697,7 @@ class Ui_WelcomeWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuClasses.setTitle(_translate("MainWindow", "Classes", None))
         self.menuMessages.setTitle(_translate("MainWindow", "Messages", None))
-        self.menuUsers.setTitle(_translate("MainWindow", "Users", None))
+        
         if currentUser.type != "Admin":
             self.menuHomework.setTitle(_translate("MainWindow", "Homework", None))
         
@@ -703,7 +711,9 @@ class Ui_WelcomeWindow(object):
                 self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
             else:
                 self.addHomework.setText(_translate("MainWindow","Add Homework",None))
+                self.viewHomework.setText(_translate("MainWindow","View Homework",None))
             self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
+            self.menuUsers.setTitle(_translate("MainWindow", "Users", None))
         self.actionQuit.setText(_translate("MainWindow", "Quit Application", None))
         self.actionLogOut.setText(_translate("MainWindow", "Log Out", None))
         self.resetPassword.setText(_translate("MainWindow","Reset Password",None))
@@ -812,7 +822,7 @@ class WindowButtons():
         if self.typeOfBox == "Homework":
             c.execute("SELECT * FROM homework WHERE homeworkid = :id",{"id":self.id})
             lesson = c.fetchone()
-            
+            print(lesson[0],lesson[1],lesson[2],lesson[3],lesson[4])
             self.homeworkPage = EditWindow()
             self.homeworkui = Ui_HomeWorkWindow()
             self.homeworkui.setupUi(self.homeworkPage,Homework(lesson[0],lesson[1],lesson[2],lesson[3],lesson[4]))
@@ -899,7 +909,8 @@ class Ui_PasswordWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Reset Password", None))
+        MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         self.resetPasswordLabel.setText(_translate("MainWindow", "RESET PASSWORD", None))
         self.oldLabel.setText(_translate("MainWindow", "OLD PASSWORD:", None))
         self.newLabel.setText(_translate("MainWindow", "NEW PASSWORD:", None))
@@ -920,6 +931,7 @@ class Ui_PasswordWindow(object):
                     conn.commit()
                     QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                    QtGui.QMessageBox.Ok)
+                    self.window.hide()
                     return
                 QtGui.QMessageBox.question(self.window,"Error","Error: Your password is too weak and could be guessed easy. Please try use a more complex password.",
                                             QtGui.QMessageBox.Ok)
@@ -1915,6 +1927,8 @@ class Ui_SearchUsers(object):
             self.classCombo.hide()
             self.yearCombo.hide()
             self.yearCheck.hide()
+            self.typeCheck.hide()
+            self.typeCombo.hide()
 
         ##############################################################################################
 
@@ -3153,15 +3167,20 @@ class Ui_HomeWorkWindow(object):
         self.classCombo = QtGui.QComboBox(self.centralwidget)
         self.classCombo.setGeometry(QtCore.QRect(180, 90, 351, 31))
         self.classCombo.setObjectName(_fromUtf8("classCombo"))
-        c.execute("SELECT id FROM classes WHERE teacher == :teacher",{"teacher":currentUser.username})
-        data = list(c.fetchall())
-        for classid in data:
-            self.classCombo.addItem(classid[0])
+        if currentUser.type == "Teacher":
+            c.execute("SELECT id FROM classes WHERE teacher == :teacher",{"teacher":currentUser.username})
+            data = list(c.fetchall())
+            for classid in data:
+                self.classCombo.addItem(classid[0])
+        else:
+            c.execute("SELECT classid FROM studentclass WHERE username == :username",{"username":currentUser.username})
+            data = list(c.fetchall())
+            for classid in data:
+                self.classCombo.addItem(classid[0])
         if self.homework.homeworkId != "NULL":
             for i in range(len(data)):
                 if self.homework.classId == data[i][0]:
                     self.classCombo.setCurrentIndex(i)
-
 
         #Edit Homework Label
         self.editHomeworkLabel = QtGui.QLabel(self.centralwidget)
@@ -3216,6 +3235,26 @@ class Ui_HomeWorkWindow(object):
         self.titleEdit.setObjectName(_fromUtf8("titleEdit"))
         if self.homework.title != "NULL":
             self.titleEdit.setText(_translate("EditHomeWorkWindow",self.homework.title,None))
+
+        self.gradeTitle = QtGui.QLabel(self.centralwidget)
+
+        if currentUser.type == "Student":
+            self.gradeTitle = QtGui.QLabel(self.centralwidget)
+            self.gradeTitle.setGeometry(QtCore.QRect(60, 280, 101, 41))
+            self.gradeTitle.setFont(typefont)
+            self.gradeTitle.setAutoFillBackground(False)
+            self.gradeTitle.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+            "background-color: rgb(255, 255, 255);}\n"
+            ""))
+            self.gradeTitle.setAlignment(QtCore.Qt.AlignCenter)
+            self.gradeTitle.setObjectName(_fromUtf8("gradeTitle"))
+
+            self.grade = QtGui.QLabel(self.centralwidget)
+            self.grade.setGeometry(QtCore.QRect(60, 320, 101, 61))
+            self.grade.setFont(numberfont)
+            self.grade.setAutoFillBackground(False)
+            self.grade.setAlignment(QtCore.Qt.AlignCenter)
+            self.grade.setObjectName(_fromUtf8("grade"))
         
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -3238,12 +3277,47 @@ class Ui_HomeWorkWindow(object):
             self.saveBtn.setText(_translate("MainWindow", "Save", None))
             MainWindow.setWindowTitle(_translate("MainWindow", "Edit Homework Window", None))
             self.editHomeworkLabel.setText(_translate("MainWindow", "EDIT HOMEWORK", None))
+            self.gradesBtn.setText(_translate("MainWindow", "Update\nGrades", None))
         self.classLabel.setText(_translate("MainWindow", "CLASS:", None))
+        
         
         self.dueLabel.setText(_translate("MainWindow", "DUE DATE:", None))
         self.descriptionLabel.setText(_translate("MainWindow", "DESCRIPTION:", None))
         self.titleLabel.setText(_translate("MainWindow", "TITLE:", None))
         MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
+
+        if currentUser.type == "Student":
+            self.classCombo.setEnabled(False)
+            self.dateEdit.setEnabled(False)
+            self.titleEdit.setEnabled(False)
+            self.descriptionEdit.setEnabled(False)
+            self.saveBtn.hide()
+            self.gradesBtn.hide()
+            self.gradeTitle.setText(_translate("MainWindow", "Homework\n Status", None))
+            c.execute("SELECT "+self.homework.homeworkId+" FROM "+self.homework.classId+" WHERE Student = :username",
+                      {"username":currentUser.username})
+            data = c.fetchall()
+            grade = data[0][0]
+            print(grade)
+            if grade != None and grade != "Completed":
+                self.grade.setText(_translate("MainWindow", grade, None))
+                if grade == "A*" or grade == "A":
+                    self.grade.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+                    "background-color: rgb(0, 255, 0);}\n"
+                    ""))
+                if grade == "B" or grade == "C":
+                    self.grade.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+                    "background-color: rgb(255, 165, 0);}\n"
+                    ""))
+                else:
+                    self.grade.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+                    "background-color: rgb(255, 0, 0);}\n"
+                    ""))
+            else:
+                self.grade.setText(_translate("MainWindow", "N/A", None))
+                self.grade.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+                    "background-color: rgb(255, 255, 255);}\n"
+                    ""))
 
 
     def create(self):
@@ -3318,6 +3392,8 @@ class Ui_ViewHomeworkWindow(object):
         self.classLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.classLabel.setObjectName(_fromUtf8("classLabel"))
 
+
+        
         #Class Combo
         self.classCombo = QtGui.QComboBox(self.centralwidget)
         self.classCombo.setGeometry(QtCore.QRect(140, 80, 421, 31))
@@ -3539,7 +3615,6 @@ class Ui_ViewHomeworkWindow(object):
         self.topTitle_4.raise_()
         self.topTitle_7.raise_()
         self.topDesc_7.raise_()
-        self.newHomeworkButton.raise_()
         self.amountLabel.raise_()
         self.previousButton.raise_()
         self.nextButton.raise_()
@@ -3652,6 +3727,7 @@ class Ui_ViewHomeworkWindow(object):
             self.nextButton.setEnabled(False)
                 
         ViewHomeworkWindow.setWindowTitle(_translate("ViewHomeworkWindow", "View Homework", None))
+        ViewHomeworkWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         self.myHomeworkLabel.setText(_translate("ViewHomeworkWindow", "MY HOMEWORK", None))
         self.classLabel.setText(_translate("ViewHomeworkWindow", "CLASS:", None))
         if currentUser.type == "Teacher":
@@ -3777,6 +3853,7 @@ class Ui_GradeWindow(object):
         GradeWindow.setWindowTitle(_translate("GradeWindow", "Grade Window", None))
         self.nameLabel.setText(_translate("GradeWindow", self.first + " " + self.last, None))
         self.gradeLabel.setText(_translate("GradeWindow", "GRADE:", None))
+        self.saveBtn.setText(_translate("GradeWindow", "Update", None))
 
     def save(self):
         grade = self.gradeCombo.currentText()
