@@ -297,11 +297,11 @@ class Ui_MainWindow(object):
             
             #Data[6] is the user type
             if data[6] == "Student":
-                c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":self.username})
-                yeargroup = c.fetchone()
-                #COME BACK HERE LATER
+                c.execute("SELECT yeargroup,achievementpoints,behaviourpoints FROM student WHERE username=:username",{"username":self.username})
+                details = c.fetchone()
+
                 #Setting the user as a student class.
-                currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],yeargroup,data[7])
+                currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],details[0],data[7],details[1],details[2])
             else:   
                 currentUser = User(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
             self.open_user()
@@ -377,6 +377,7 @@ class Ui_WelcomeWindow(object):
 "text-decoration: underline;\n"
 "border: 0px;}"))
         self.viewButton.setObjectName(_fromUtf8("viewButton"))
+        self.viewButton.clicked.connect(self.view_homework)
 
 
         ##TOP RESULTS
@@ -522,8 +523,6 @@ class Ui_WelcomeWindow(object):
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
         self.menuClasses = QtGui.QMenu(self.menubar)
         self.menuClasses.setObjectName(_fromUtf8("menuClasses"))
-        self.menuMessages = QtGui.QMenu(self.menubar)
-        self.menuMessages.setObjectName(_fromUtf8("menuMessages"))
         self.menuHomework = QtGui.QMenu(self.menubar)
         self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
         self.menubar.addAction(self.menuFile.menuAction())
@@ -538,7 +537,35 @@ class Ui_WelcomeWindow(object):
             self.viewHomework.setObjectName(_fromUtf8("viewHomework"))
             self.viewHomework.setStatusTip("View my homework")
             self.menuHomework.addAction(self.viewHomework)
-            self.viewHomework.triggered.connect(self.view_homework)                
+            self.viewHomework.triggered.connect(self.view_homework)
+
+
+            #Getting 3 most upcoming homeworks
+            today = datetime.datetime.today().strftime('%Y-%m-%d')
+            data = []
+            if currentUser.type == "Student":
+                c.execute("SELECT classid FROM studentclass WHERE username = :username",
+                      {"username":currentUser.username})
+            else:
+                c.execute("SELECT id FROM classes WHERE teacher = :username",
+                      {"username":currentUser.username})
+            self.data = list(c.fetchall())
+
+            for classid in self.data:
+                c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate >= :date",{"classid":classid[0],"date":today})
+                temp = c.fetchall()
+                if temp != None:
+                    data.extend(list(temp))
+            data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%Y-%m-%d")))
+            if data == None:
+                data = []
+            self.homeworks = data
+
+
+
+
+
+
 
         if currentUser.type != "Student":
             self.menuSubjects = QtGui.QMenu(self.menubar)
@@ -559,10 +586,6 @@ class Ui_WelcomeWindow(object):
             self.menuHomework.addAction(self.addHomework)
             self.addHomework.triggered.connect(self.create_homework)
 
-
-
-            
-            
 
         if currentUser.type == "Admin":
             #Add Class
@@ -605,8 +628,6 @@ class Ui_WelcomeWindow(object):
             self.menubar.addAction(self.menuSubjects.menuAction())
             self.menubar.addAction(self.menuClasses.menuAction())
             
-                
-
 
          #Adding to the bars
 
@@ -639,26 +660,46 @@ class Ui_WelcomeWindow(object):
 
         MainWindow.setMenuBar(self.menubar)
         MainWindow.setStatusBar(self.statusbar)
-        self.menubar.addAction(self.menuMessages.menuAction())
 
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
+      
         MainWindow.setWindowTitle(_translate("MainWindow", "Welcome Window", None))
         self.welcomeLabel.setText(_translate("MainWindow", "Welcome back,\n"
-"Tom!", None))
-        self.homeworkTitle.setText(_translate("MainWindow", "My Homework: (x Due Soon)", None))
-        self.viewButton.setText(_translate("MainWindow", "Click to view more", None))
+        +str(currentUser.first), None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuClasses.setTitle(_translate("MainWindow", "Classes", None))
-        self.menuMessages.setTitle(_translate("MainWindow", "Messages", None))
         self.behaviourTitle.setText(_translate("MainWindow","Behaviour\nPoints",None))
         self.achievementTitle.setText(_translate("MainWindow","Achievement\nPoints",None))
         
         if currentUser.type != "Admin":
             self.menuHomework.setTitle(_translate("MainWindow", "Homework", None))
+            self.viewHomework.setText(_translate("MainWindow","View Homework",None))
+            self.homeworkTitle.setText(_translate("MainWindow", "My Homework: ("+str(len(self.homeworks))+" Due Soon)", None))
+            self.viewButton.setText(_translate("MainWindow", "Click to view more", None))
+            if len(self.homeworks) >= 1:
+                if len(self.homeworks[0][3]) > 45:
+                       self.homeworks[0][3]= self.homeworks[0][3][:42]+"..."
+                self.top1.retranslateUi(self.homeworks[0][3],
+                                        self.homeworks[0][1] + " - Due "+self.homeworks[0][2],
+                                        self.homeworks[0][0])
+
+            if len(self.homeworks) >= 2:
+                if len(self.homeworks[1][3]) > 45:
+                       self.homeworks[1][3]= self.homeworks[1][3][:42]+"..."
+                self.top2.retranslateUi(self.homeworks[1][3],
+                                        self.homeworks[1][1] + " - Due "+self.homeworks[1][2],
+                                        self.homeworks[1][0])
+
+            if len(self.homeworks) >= 3:
+                if len(self.homeworks[2][3]) > 45:
+                       self.homeworks[2][3]= self.homeworks[2][3][:42]+"..."
+                self.top3.retranslateUi(self.homeworks[2][3],
+                                        self.homeworks[2][1] + " - Due "+self.homeworks[2][2],
+                                        self.homeworks[2][0])
         
         if currentUser.type != "Student":
             if currentUser.type == "Admin":
@@ -670,9 +711,11 @@ class Ui_WelcomeWindow(object):
                 self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
             else:
                 self.addHomework.setText(_translate("MainWindow","Add Homework",None))
-                self.viewHomework.setText(_translate("MainWindow","View Homework",None))
             self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
             self.menuUsers.setTitle(_translate("MainWindow", "Users", None))
+        else:
+            self.achievementNumber.setText(_translate("MainWindow",str(currentUser.achievementpoints),None))
+            self.behaviourNumber.setText(_translate("MainWindow",str(currentUser.behaviourpoints),None))
         self.actionQuit.setText(_translate("MainWindow", "Quit Application", None))
         self.actionLogOut.setText(_translate("MainWindow", "Log Out", None))
         self.resetPassword.setText(_translate("MainWindow","Reset Password",None))
@@ -754,6 +797,9 @@ class Ui_WelcomeWindow(object):
         self.passwordUi = Ui_PasswordWindow()
         self.passwordUi.setupUi(self.passwordPage)
         self.passwordPage.show()
+
+
+
 
 #This class is to make buttons easier to control. Instead of treating each like individual objects
 #This class allows them to be treated as a whole.
@@ -2584,10 +2630,10 @@ class SearchBox():
         data = c.fetchone()
 
         if data[6] == "Student":
-            c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":self.username})
-            yeargroup = c.fetchone()
+            c.execute("SELECT yeargroup,achievementpoints,behaviourpoints FROM student WHERE username=:username",{"username":self.username})
+            details = c.fetchone()
             
-            self.user = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],yeargroup[0],data[7])
+            self.user = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],details[0],data[7],details[1],details[2])
             self.edit_student()
         else:   
             self.user = User(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
@@ -3112,16 +3158,7 @@ class Ui_HomeWorkWindow(object):
         self.saveBtn.setGeometry(QtCore.QRect(550, 390, 75, 27))
         self.saveBtn.setFont(labelfont)
         self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
-        if self.homework.homeworkId == "NULL":
-            self.saveBtn.clicked.connect(self.create)
-        else:
-            self.saveBtn.clicked.connect(self.edit)
-            #Grades Button
-            self.gradesBtn = QtGui.QPushButton(self.centralwidget)
-            self.gradesBtn.setGeometry(QtCore.QRect(550, 330, 75, 51))
-            self.gradesBtn.setFont(labelfont)
-            self.gradesBtn.setObjectName(_fromUtf8("gradesBtn"))
-            self.gradesBtn.clicked.connect(self.grades_window)
+
 
         #Full Name Button
         self.classLabel = QtGui.QLabel(self.centralwidget)
@@ -3222,6 +3259,18 @@ class Ui_HomeWorkWindow(object):
             self.grade.setAutoFillBackground(False)
             self.grade.setAlignment(QtCore.Qt.AlignCenter)
             self.grade.setObjectName(_fromUtf8("grade"))
+
+        if self.homework.homeworkId == "NULL":
+            self.saveBtn.clicked.connect(self.create)
+        else:
+            self.saveBtn.clicked.connect(self.edit)
+            self.classCombo.setEnabled(False)
+            #Grades Button
+            self.gradesBtn = QtGui.QPushButton(self.centralwidget)
+            self.gradesBtn.setGeometry(QtCore.QRect(550, 330, 75, 51))
+            self.gradesBtn.setFont(labelfont)
+            self.gradesBtn.setObjectName(_fromUtf8("gradesBtn"))
+            self.gradesBtn.clicked.connect(self.grades_window)
         
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
@@ -3329,7 +3378,13 @@ class Ui_HomeWorkWindow(object):
             
 
     def edit(self):
-        pass
+        duedate = str(self.dateEdit.date().toPyDate())
+        duedate = duedate[:4]+ "-"+duedate[5:7]+"-"+duedate[8:]
+        title = self.titleEdit.text()
+        desc = self.descriptionEdit.toPlainText()
+        c.execute("UPDATE homework SET duedate = :duedate, title = :title,description = :description WHERE homeworkid = :homeworkid",
+                  {"duedate":duedate,"title":title,"desc":desc,"homeworkid":self.homework.homeworkId})
+        conn.commit()
 
     def grades_window(self):
         self.searchPage = EditWindow()
@@ -3583,7 +3638,6 @@ class Ui_ViewHomeworkWindow(object):
         self.amountLabel.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.amountLabel.setObjectName(_fromUtf8("amountLabel"))
 
-        
         self.topTitle_2.raise_()
         self.topDesc.raise_()
         self.topTitle.raise_()
@@ -3608,6 +3662,7 @@ class Ui_ViewHomeworkWindow(object):
         self.topButton_4.raise_()
         self.topButton_6.raise_()
         self.topButton.raise_()
+        self.typeBtn.raise_()
         
         ViewHomeworkWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(ViewHomeworkWindow)
@@ -3710,6 +3765,10 @@ class Ui_ViewHomeworkWindow(object):
             self.nextButton.setEnabled(False)
                 
         ViewHomeworkWindow.setWindowTitle(_translate("ViewHomeworkWindow", "View Homework", None))
+        if self.typeOfWindow == "Future":
+            self.typeBtn.setText(_translate("ViewHomeworkWindow", "View\nOverdue", None))
+        else:
+            self.typeBtn.setText(_translate("ViewHomeworkWindow", "View\nUpcoming", None))
         ViewHomeworkWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
         self.myHomeworkLabel.setText(_translate("ViewHomeworkWindow", "MY HOMEWORK", None))
         self.classLabel.setText(_translate("ViewHomeworkWindow", "CLASS:", None))
@@ -3727,6 +3786,7 @@ class Ui_ViewHomeworkWindow(object):
         else:
             self.typeOfWindow = "Future"
         self.search()
+        self.retranslateUi(self.window)
 
 
     def previous_page(self):
@@ -3758,23 +3818,24 @@ class Ui_ViewHomeworkWindow(object):
                 data = []
             else:
                 data = list(data)
-            
-            
-            
+                      
         else:
             data = []
             for classid in self.data:
                 if self.typeOfWindow == "Future":
                     c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate >= :date",{"classid":classid[0],"date":today})
                 else:
-                    c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate < :date",{"classid":classid[0],"date":today})
+                    c.execute("SELECT * FROM homework WHERE classid = :classid AND NOT duedate >= :date",{"classid":classid[0],"date":today})
+
                 temp = c.fetchall()
                 if temp != None:
                     data.extend(list(temp))
 
         data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%Y-%m-%d")))
-        if self.typeOfWindow != "Future"
-            data = data.reverse()
+        if self.typeOfWindow != "Future":
+            data.reverse()
+        if data == None:
+            data = []
         self.homeworks = data
 
 

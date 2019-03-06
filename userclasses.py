@@ -31,9 +31,11 @@ class User:
 class Student(User):
     """A students basic attributes"""
        
-    def __init__(self,first,last,username,password,dob,email,typeOfUser,yeargroup,pic):
+    def __init__(self,first,last,username,password,dob,email,typeOfUser,yeargroup,pic,achievementpoints,behaviourpoints):
         super(Student,self).__init__(first,last,username,password,dob,email,typeOfUser,pic)
         self.yeargroup = yeargroup
+        self.achievementpoints = achievementpoints
+        self.behaviourpoints = behaviourpoints
 
 class Class:
     """A sample class"""
@@ -81,16 +83,16 @@ class Homework:
         self.desc = desc
 
     @property
-    def dueyear(self):
-        return self.due[6:]
+    def dueday(self):
+        return self.due[8:]
     
     @property
     def duemonth(self):
-        return self.due[3:5]
+        return self.due[5:7]
     
     @property
-    def dueday(self):
-        return self.due[:2]
+    def dueyear(self):
+        return self.due[:4]
         
         
 
