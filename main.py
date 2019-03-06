@@ -9,8 +9,9 @@
 
 """
 
-
-
+#Variable formatting
+#Camelcasing for all variables.
+#Use underscores for all methods
 
 
 
@@ -22,29 +23,31 @@ import hashlib #Hashlib is the default python library for hashing. This is usefu
 import sys #Used to interact with the system. Examples where this is used is sys.exit which allows me to close the program.
 #from adminmain import Ui_AdminWindow
 from userclasses import * #This is my own library. This imports the user classes.
-import random #
-import string
-from shutil import copyfile
-import os
-from difflib import SequenceMatcher
-from zxcvbn import zxcvbn
-import time
+import random #Used for generating random items. Ie. Random password
+import string #Has a few useful functions that help dealing with strings
+from shutil import copyfile #Used for copying a file from a location on the users
+                            #PC onto the database server
+import os #Used for a couple useful functions. ie. Find program file path and isFile.
+from difflib import SequenceMatcher #Good for searches and finding similar results rather exact search results
+from zxcvbn import zxcvbn #Password strength tester
+#These two are used for interacting with dates.
+import time 
 import datetime
 
-
+#Finding the file path of this program.
 path = os.getcwd()
+
+#This is used if you are connecting to a database server
 ##host = "localhost"
 ##username = "default"
 ##password = "tomrowbotham"
-
-#select * from users inner join students on users.id = students.id
-
-
 #conn = MySQLdb.connect(host,username,password,db = "users")
+
+#Connecting to the database
 conn = sqlite3.connect("school.db")
 c = conn.cursor()
 
-
+#Needed for all PyQt programs to ensure everything is working.
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -63,6 +66,9 @@ except AttributeError:
 css = _fromUtf8("QMainWindow {\n"
 "background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}")
 
+
+#These are all the global fonts. Instead of redefining what font I want to use everytime I create an object with text
+#It will be more efficient to have a long list of all the fonts used. Every font follows a similar style.
 labelfont = QtGui.QFont()
 labelfont.setPointSize(12)
 
@@ -131,15 +137,22 @@ numberfont = QtGui.QFont()
 numberfont.setFamily(_fromUtf8("OCR A Std"))
 numberfont.setPointSize(26)
 
+#These are the regex equations. This is used for validating inputs and only allowing
+#A user to enter valid keys.
+
+#Allows a-z and A-Z and -
 regex=QtCore.QRegExp("[a-z-A-Z]+")
 lettersvalidator = QtGui.QRegExpValidator(regex)
 
+#Allows A-Z a-z and space bar and -
 regex=QtCore.QRegExp("[a-z-A-Z ]+")
 lettersandspacevalidator = QtGui.QRegExpValidator(regex)
 
+#Allows A-Z a-z and 0-9 and -
 regex=QtCore.QRegExp("[a-z-A-Z-0-9]+")
 lettersandnumbersvalidator = QtGui.QRegExpValidator(regex)
 
+#Only allows valid email addresses.
 regex=QtCore.QRegExp(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 emailvalidator = QtGui.QRegExpValidator(regex)	
 
@@ -193,24 +206,6 @@ class Ui_MainWindow(object):
         self.incorrectLabel.setStyleSheet("color:red")
         self.incorrectLabel.hide()
 
-
-    ##        #Table Label
-    ##        self.tableLabel = QtGui.QLabel(self.centralwidget)
-    ##        self.tableLabel.setGeometry(QtCore.QRect(175, 325, 131, 51))
-    ##        self.tableLabel.setFont(labelfont)
-    ##        self.tableLabel.setAlignment(QtCore.Qt.AlignCenter)
-    ##        self.tableLabel.setObjectName(_fromUtf8("tableLabel"))
-
-
-    ##        #Table choice
-    ##        self.tableChoice = QtGui.QComboBox(self.centralwidget)
-    ##        self.tableChoice.setGeometry(QtCore.QRect(300, 337, 176, 26))
-    ##        self.tableChoice.setObjectName(_fromUtf8("tableChoice"))
-    ##        self.tableChoice.addItem("Student")
-    ##        self.tableChoice.addItem("Teacher")
-    ##        self.tableChoice.addItem("Admin")
-        
-
         #Login Button
         self.loginBtn = QtGui.QPushButton(self.centralwidget)
         self.loginBtn.setGeometry(QtCore.QRect(485, 337, 75, 27))
@@ -224,9 +219,7 @@ class Ui_MainWindow(object):
         #Close Button
         self.closeBtn = QtGui.QPushButton(self.centralwidget)
         self.closeBtn.setGeometry(QtCore.QRect(575, 337, 75, 27))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.closeBtn.setFont(font)
+        self.closeBtn.setFont(labelfont)
         self.closeBtn.setObjectName(_fromUtf8("closeBtn"))
         #######################Close Event###########################
         self.closeBtn.clicked.connect(self.close_app)
@@ -258,20 +251,21 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-
+    #Retranslate Ui Method is used for changing the text in the window by calling this one function instead
+    #Of having to redefine every object again.
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Robert Smyth Login Form", None))
         self.usernameLabel.setText(_translate("MainWindow", "USERNAME", None))
         self.incorrectLabel.setText(_translate("MainWindow", "Error: User not found. Please verify details are correct and CAPS LOCK is not on.", None))
         self.passwordLabel.setText(_translate("MainWindow", "PASSWORD", None))
-        #self.tableLabel.setText(_translate("MainWindow", "TABLE:", None))
         self.loginBtn.setText(_translate("MainWindow", "Login", None))
         self.closeBtn.setText(_translate("MainWindow", "Close", None))
         MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
+        #Sets the entire program style.
         QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Windows Vista"))
         
 
-    
+    #Close app function. When pressed the program will close and the user will no longer by able to interact with it.
     def close_app(self):
         choice = QtGui.QMessageBox.question(MainWindow, "Close Application",
                 "Are you sure you would like to quit?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
@@ -280,37 +274,43 @@ class Ui_MainWindow(object):
         else:
             pass
         
-
+    #Login function
     def login_(self):
-        #self.table = self.tableChoice.currentText()
+        #Retrieving inputs from the window and storing them as local variables.
         self.username = self.usernameEdit.text().lower()
         self.password = self.passwordEdit.text()
         self.password = hashing(self.password)
 
+        #Fetching user from database
         c.execute("SELECT * FROM users WHERE username=:username AND password=:password ORDER BY username ASC",
                   {"username":self.username,"password":self.password})
         
         data = c.fetchone()
-            #print(data)
+
+        #None will be returned if there is no user with that username or password.
         if data == None:
             self.incorrectLabel.show()
+
+        #If the user is found.
         else:
             global currentUser
-
+            
+            #Data[6] is the user type
             if data[6] == "Student":
                 c.execute("SELECT yeargroup FROM student WHERE username=:username",{"username":self.username})
                 yeargroup = c.fetchone()
+                #COME BACK HERE LATER
+                #Setting the user as a student class.
                 currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],yeargroup,data[7])
             else:   
                 currentUser = User(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
             self.open_user()
-                
-                    
-                #MainWindow.hide()
-                
 
+    #Open user is the function that closes the login page and opens the welcome page
     def open_user(self):
         MainWindow.hide()
+
+        #Creating the welcome page
         self.window = QtGui.QMainWindow()
         self.ui = Ui_WelcomeWindow()
         self.ui.setupUi(self.window)
@@ -330,9 +330,9 @@ class Ui_WelcomeWindow(object):
             height = 593
         MainWindow.resize(640, height)
         MainWindow.setStyleSheet(_fromUtf8("QMainWindow {\n"
-"background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
-"QPushButton{background: transparent;"
-"border: 1px solid black;}"))
+        "background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
+        "QPushButton{background: transparent;"
+        "border: 1px solid black;}"))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
 
@@ -340,11 +340,12 @@ class Ui_WelcomeWindow(object):
         self.profilePic = QtGui.QLabel(self.centralwidget)
         self.profilePic.setGeometry(QtCore.QRect(80, 10, 126, 126))
         self.profilePic.setText(_fromUtf8(""))
+
+        #If the program can find the users profile picture then set image as profile picture.
         if os.path.isfile(path + currentUser.pic):
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + currentUser.pic)))
         else:
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
-
         self.profilePic.setScaledContents(True)
         self.profilePic.setObjectName(_fromUtf8("profilePic"))
 
@@ -495,10 +496,6 @@ class Ui_WelcomeWindow(object):
         self.behaviourTitle.setObjectName(_fromUtf8("behaviourTitle"))
 
         #Sorting out alignment
-        self.profilePic.raise_()
-        self.welcomeLabel.raise_()
-        self.homeworkTitle.raise_()
-        self.viewButton.raise_()
         self.topTitle.raise_()
         self.topDesc.raise_()
         self.topTitle_2.raise_()
@@ -531,6 +528,7 @@ class Ui_WelcomeWindow(object):
         self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
         self.menubar.addAction(self.menuFile.menuAction())
 
+        #Adding actions to the menu bar depending on the user type
         if currentUser.type != "Admin":
             self.menuHomework = QtGui.QMenu(self.menubar)
             self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
@@ -680,6 +678,7 @@ class Ui_WelcomeWindow(object):
         self.resetPassword.setText(_translate("MainWindow","Reset Password",None))
         MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
 
+    #All these methods will open different windows.
     def view_users(self):
         self.viewUserPage = EditWindow()
         self.viewUserUi = Ui_SearchUsers()
@@ -730,13 +729,15 @@ class Ui_WelcomeWindow(object):
         self.viewhomeworkui.setupUi(self.viewHomeworkPage,"Future")
         self.viewHomeworkPage.show()
 
-    
+    #This will close the program
     def close_app(self):
         choice = QtGui.QMessageBox.question(self.window,"Close Application","Are you sure you would like to quit?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:
             sys.exit()
         else:
             pass
+
+    #This will close the windows and open login page
     def log_out(self):
         self.window.close()
         self.open_login()
@@ -754,7 +755,8 @@ class Ui_WelcomeWindow(object):
         self.passwordUi.setupUi(self.passwordPage)
         self.passwordPage.show()
 
-
+#This class is to make buttons easier to control. Instead of treating each like individual objects
+#This class allows them to be treated as a whole.
 class WindowButtons():
     def __init__(self,button,title,desc,typeOfBox):
         self.button = button
@@ -769,11 +771,13 @@ class WindowButtons():
         self.desc.setText(_translate("MainWindow",desc,None))
         self.id = id
 
+    #Hides button
     def hide_all(self):
         self.button.hide()
         self.title.hide()
         self.desc.hide()
 
+    #Shows button
     def show_all(self):
         self.button.show()
         self.title.show()
@@ -787,6 +791,7 @@ class WindowButtons():
             self.homeworkui = Ui_HomeWorkWindow()
             self.homeworkui.setupUi(self.homeworkPage,Homework(lesson[0],lesson[1],lesson[2],lesson[3],lesson[4]))
             self.homeworkPage.show()
+
 
 class Ui_PasswordWindow(object):
     def setupUi(self, MainWindow):
@@ -877,6 +882,9 @@ class Ui_PasswordWindow(object):
         self.confirmLabel.setText(_translate("MainWindow", "CONFIRM PASSWORD:", None))
         self.saveBtn.setText(_translate("MainWindow", "Save", None))
 
+
+    #This function tests the strength of the password. If the password is determined to be strong enough
+    #Then the password will be updated. If not - the user will be given a tip on how to improve.
     def change_pass(self):
         old = self.oldEdit.text()
         old = hashing(old)
@@ -978,6 +986,8 @@ class Ui_CreateClassWindow(object):
         self.yearCombo.setObjectName(_fromUtf8("yearCombo"))
         self.yearCombo.addItem("Year 12")
         self.yearCombo.addItem("Year 13")
+
+        #Setting the default display option to be what the classes year group is.
         if self.currentClass.yearGroup == "13":
             self.yearCombo.setCurrentIndex(1)
             
@@ -1037,6 +1047,7 @@ class Ui_CreateClassWindow(object):
         self.teacherCombo = QtGui.QComboBox(self.centralwidget)
         self.teacherCombo.setGeometry(QtCore.QRect(180, 160, 351, 22))
         self.teacherCombo.setObjectName(_fromUtf8("teacherCombo"))
+        #Fetches all teachers and adds them to the ComboBox. 
         c.execute("""SELECT first, last, username
                   FROM users
                   WHERE type = 'Teacher'
@@ -1051,6 +1062,7 @@ class Ui_CreateClassWindow(object):
         self.subjectCombo = QtGui.QComboBox(self.centralwidget)
         self.subjectCombo.setGeometry(QtCore.QRect(180, 120, 351, 22))
         self.subjectCombo.setObjectName(_fromUtf8("subjectCombo"))
+        #Fetches all subjects from database.
         c.execute("""SELECT fullname
                   FROM subjects
                   ORDER BY fullname ASC""")
@@ -1114,11 +1126,8 @@ class Ui_CreateClassWindow(object):
         
 
     def create_(self):
-        #self.table = self.tableChoice.currentText()
-        #self.username = self.usernameEdit.text()
 
         self.get_details()
-        #TEST THIS LATER
         c.execute("SELECT shortname FROM subjects WHERE fullname = :fullname",
                   {"fullname":self.currentClass.subject})
         self.currentClass.id = c.fetchone()[0]
@@ -1127,12 +1136,13 @@ class Ui_CreateClassWindow(object):
         data = c.fetchall()
         classes = []
         self.currentClass.id += "1"
+        #Generating a valid id for the class. To do this, the default id will be subjectname1 and if that is taken
+        #Then that one will become a 2, then 3 etc.
         for item in data:
             classes.append(item[0])
             chosen = False
             while not chosen:
                 if self.currentClass.id in classes:
-                    #print(self.username[:len(self.last)+1])
                     self.currentClass.id = self.currentClass.id[:-1] + str(int(self.currentClass.id[-1])+1)
                 else:
                     chosen = True
@@ -1149,23 +1159,21 @@ class Ui_CreateClassWindow(object):
         self.newPage.setupUi(self.newWindow,self.currentClass)
         self.newWindow.show()
 
-
+    #Getting all inputs.
     def get_details(self):
         self.currentClass.subject = self.subjectCombo.currentText()
         self.currentClass.teacher = self.teacherCombo.currentText()
         self.currentClass.teacher = self.currentClass.teacher[self.currentClass.teacher.find("(")+1:self.currentClass.teacher.find(")")]
         self.currentClass.yearGroup = self.yearCombo.currentText()[-2:]
 
-        
-
-
-
+    #Pop Up Window 
     def save_changes(self):
         choice = QtGui.QMessageBox.question(self.window,"Save Changes","Are you sure you would like save the changes?\n"
                                             "Any previous data will be lost.",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:
             self.save_()
-
+            
+    #Save functions
     def save_(self):
         self.get_details()
         c.execute("UPDATE classes SET teacher = :teacher AND yeargroup = :yearGroup WHERE id = :id",
@@ -1173,6 +1181,7 @@ class Ui_CreateClassWindow(object):
         conn.commit()
         self.saved_window()
 
+    #Pop Up Window
     def saved_window(self):
         QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                    QtGui.QMessageBox.Ok)
@@ -1252,6 +1261,7 @@ class Ui_EditSubjectWindow(object):
         self.headCombo = QtGui.QComboBox(self.centralwidget)
         self.headCombo.setGeometry(QtCore.QRect(220, 260, 351, 31))
         self.headCombo.setObjectName(_fromUtf8("headCombo"))
+        #Fetching all teachers
         c.execute("""SELECT first, last, username
                   FROM users
                   WHERE type = 'Teacher'
@@ -1260,6 +1270,7 @@ class Ui_EditSubjectWindow(object):
         for i in range(len(data)):
             self.headCombo.addItem("{} {} ({})".format(data[i][0],data[i][1],data[i][2] ))
             if data[i][2] == self.subject.head:
+                #Sets current index as the current head of subject
                 self.headCombo.setCurrentIndex(i)
  
 
@@ -1289,10 +1300,10 @@ class Ui_EditSubjectWindow(object):
             self.saveBtn.setText(_translate("EditSubjectWindow", "Create", None))
         else:
             self.fullNameEdit.setText(_translate("EditSubjectWindow", self.subject.fullname, None))
+            #Setting enabled as false keeps it visible however the user cannot edit it.
             self.fullNameEdit.setEnabled(False)
             self.shortNameEdit.setEnabled(False)
             self.shortNameEdit.setText(_translate("EditSubjectWindow", self.subject.shortname, None))
-            #self.headCombo.setText(_translate("EditSubjectWindow", self.subject.head, None)) 
             self.saveBtn.setText(_translate("EditSubjectWindow", "Save", None))
             self.editSubjectLabel.setText(_translate("EditSubjectWindow", "EDIT SUBJECT", None))
         self.fullNameLabel.setText(_translate("EditSubjectWindow", "FULL NAME", None))
@@ -1303,8 +1314,6 @@ class Ui_EditSubjectWindow(object):
 
 
     def create_(self):
-        #self.table = self.tableChoice.currentText()
-        #self.username = self.usernameEdit.text()
 
         self.get_details()
         c.execute("INSERT INTO subjects VALUES (:full,:short,:head)",
@@ -1314,6 +1323,7 @@ class Ui_EditSubjectWindow(object):
         
         conn.commit()
 
+        #Once created the window will disappear and a new window with "Edit" instead of "Create"
         self.window.hide()
         self.newWindow = EditWindow()
         self.newPage = Ui_EditSubjectWindow()
@@ -1350,7 +1360,6 @@ class Ui_EditSubjectWindow(object):
 class Ui_EditUserWindow(object):
     def setupUi(self, EditUserWindow,typeOfUser,user):
         self.user = user
-        #print(self.user.first,self.user.last,self.user.username,self.user.password,self.user.dob,self.user.email,self.user.type,self.user.pic,self.user.yeargroup)
         #Creating Main Window
         EditUserWindow.setObjectName(_fromUtf8("EditUserWindow"))
         EditUserWindow.resize(640, 480)
@@ -1384,13 +1393,14 @@ class Ui_EditUserWindow(object):
             self.yearGroupLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
             self.yearGroupLabel.setObjectName(_fromUtf8("yearGroupLabel"))
 
-            #MoveY
+            #MoveY is used so that if it is a student certain objects will be placed lower down on the window
             moveY += 30
 
         #Profile Picture
         self.profilePic = QtGui.QLabel(self.centralwidget)
         self.profilePic.setGeometry(QtCore.QRect(30, 10, 126, 126))
         self.profilePic.setText(_fromUtf8(""))
+        #If user profile pic exists then display
         if os.path.isfile(path + self.user.pic):
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + self.user.pic)))
         else:
@@ -1507,6 +1517,7 @@ class Ui_EditUserWindow(object):
             self.resetPassword.clicked.connect(self.generate_password)
 
             if self.user.type != "Admin":
+                #Show class button if user is not an admin
                 self.selectClasses = QtGui.QPushButton(self.centralwidget)
                 self.selectClasses.setGeometry(QtCore.QRect(210, 350+moveY, 121, 57))
                 self.selectClasses.setFont(labelfont)
@@ -1522,12 +1533,6 @@ class Ui_EditUserWindow(object):
         self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         EditUserWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(EditUserWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        EditUserWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(EditUserWindow)
-        QtCore.QMetaObject.connectSlotsByName(EditUserWindow)
         self.statusbar = QtGui.QStatusBar(EditUserWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         EditUserWindow.setStatusBar(self.statusbar)
@@ -1583,20 +1588,13 @@ class Ui_EditUserWindow(object):
         self.usernameLabel.setText(_translate("EditUserWindow", "USERNAME", None))
         self.emailLabel.setText(_translate("EditUserWindow", "EMAIL", None))
         self.firstLabel.setText(_translate("EditUserWindow", "FIRST NAME", None))
-    ##        self.menuFile.setTitle(_translate("EditUserWindow", "File", None))
-    ##        self.menuSubjects.setTitle(_translate("EditUserWindow", "Subjects", None))
-    ##        self.menuLessons.setTitle(_translate("EditUserWindow", "Lessons", None))
-    ##        self.menuUsers.setTitle(_translate("EditUserWindow", "Users", None))
-    ##        #self.actionQuit.setText(_translate("EditUserWindow", "Quit", None))
 
     def create_(self):
-        #self.table = self.tableChoice.currentText()
-        #self.username = self.usernameEdit.text()
         self.user.first = self.firstEdit.text()
         self.user.last = self.lastEdit.text()
         self.user.username = (self.user.first[0]+self.user.last).lower()
+        #Creating unique username. Surname+firstname[0]1 and if taken 1 becomes 2,3 etc.
         length = len(self.user.username) 
-        #TEST THIS LATER
         c.execute("SELECT username FROM users WHERE username LIKE :username ORDER BY username ASC",
                   {"username":str(self.user.username)+"%"})
         data = c.fetchall()
@@ -1615,6 +1613,7 @@ class Ui_EditUserWindow(object):
         self.user.dob = str(self.dateEdit.date().toPyDate())
         self.user.dob = self.user.dob[8:]+"-"+self.user.dob[5:7]+"-"+self.user.dob[:4]
         self.user.email = self.emailEdit.text()
+        #Password and pic are intially NULL and have to be changed after creation.
         self.user.password = "NULL"
         self.user.pic = "NULL"
         c.execute("INSERT INTO users VALUES (:first,:last,:username,:password, :dob,:email,:type,:pic)",
@@ -1639,10 +1638,10 @@ class Ui_EditUserWindow(object):
         self.dob = self.dob[8:]+"-"+self.dob[5:7]+"-"+self.dob[:4]
         self.email = self.emailEdit.text()
         try:
+            #Move file to a folder within the program.
             copyfile(self.picture,path + self.user.pic)
         except:
             pass
-        #c.execute("UPDATE users SET pic = :pictureLocation WHERE username = :username",{"pictureLocation":self.pictureLocation,"username":self.user.username})
         c.execute("UPDATE users SET first = :first, last = :last,dob = :dob, email = :email, pic = :pic WHERE username = :username",
                   {"first":self.first,"last":self.last,"dob":self.dob,"email":self.email,"pic": self.user.pic,"username":self.user.username})
         if self.user.type == "Student":
@@ -1652,23 +1651,27 @@ class Ui_EditUserWindow(object):
         self.saved_window()
 
 
+    #Upload picture method
     def upload_picture(self):
+        #Open file explorer showing only folders and png files
         self.picture = QtGui.QFileDialog.getOpenFileName(None,"Select Profile Picture","","Images (*png)")
+        
         self.user.pic = "\\userphotos\\"+self.user.username + ".png"
+        
         try:
             self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + self.user.pic)))
         except FileNotFoundError:
             QtGui.QMessageBox.question(self.window,"Error","Error: File not found",
                                        QtGui.QMessageBox.Ok)
-            
-        #c.execute("UPDATE users SET pic = :pictureLocation WHERE username = :username",{"pictureLocation":self.pictureLocation,"username":self.user.username})
 
 
            
-
+    #Generating a random password
     def generate_password(self):
+        #Creating a empty string
         self.password = ""
         for i in range(9):
+            #Random choice of lowercase,uppercase and digits.
             self.password += random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits)
         choice = QtGui.QMessageBox.question(self.window,"Generate Password?","Are you sure you would like to create a new password?"
                                     "\nAny previous password will be lost.",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
@@ -1695,6 +1698,7 @@ class Ui_EditUserWindow(object):
                                    QtGui.QMessageBox.Ok)
 
     def select_classes(self):
+        #Opens classes window
         self.selectClass = EditWindow()
         self.selectClassUi = Ui_ClassListWindow()
         if self.type == "Student":
@@ -1883,6 +1887,7 @@ class Ui_SearchUsers(object):
         self.searchButton.clicked.connect(self.search)
 
         if self.typeOfWindow == "Homework":
+            #If used for the grade window hide alot of the filters
             self.classCheck.hide()
             self.classCombo.hide()
             self.yearCombo.hide()
@@ -1891,7 +1896,7 @@ class Ui_SearchUsers(object):
             self.typeCombo.hide()
 
         ##############################################################################################
-
+        #Search results (Contains alot)
 
         ## RESULT ONE
 
@@ -2190,7 +2195,9 @@ class Ui_SearchUsers(object):
         #################################################################################################
 
 
-        #Arranging objects 
+        #Arranging objects
+        #Though this may seem long and pointless - this is just to ensure that every object
+        #is visible and not covered by another object.
         self.resultRectangle.raise_()
         self.filterRect.raise_()
         self.titleLabel.raise_()
@@ -2214,10 +2221,6 @@ class Ui_SearchUsers(object):
         self.resultTitle.raise_()
         self.resultType.raise_()
         self.searchButton.raise_()
-        self.amountLabel.raise_()
-        self.pageNumber.raise_()
-        self.previousButton.raise_()
-        self.nextButton.raise_()
         self.yearCheck.raise_()
         self.yearCombo.raise_()
         self.resultRectangle_2.raise_()
@@ -2271,6 +2274,8 @@ class Ui_SearchUsers(object):
 
     def retranslateUi(self):
 
+        #Going through data. If there is not enough results to show all results then
+        #result box will be hidden. Else, the objects will be changed so the correct details appear.
         if len(self.data) >= 1+((self.page-1)*7):
             self.result1.retranslateUi(self.data[0+(self.page-1)*7][0],self.data[0+(self.page-1)*7][1],self.data[0+(self.page-1)*7][2],self.data[0+(self.page-1)*7][6],self.data[0+(self.page-1)*7][7])            
             self.result1.show_all()
@@ -2314,10 +2319,7 @@ class Ui_SearchUsers(object):
         else:
             self.result7.hide_all()
 
-
-
-
-                    
+    
         self.window.setWindowTitle(_translate("SearchUsers", "Search User Window", None))
         self.titleLabel.setText(_translate("SearchUsers", "SEARCH USERS", None))
         self.nameLabel.setText(_translate("SearchUsers", "FULL NAME", None))
@@ -2529,6 +2531,7 @@ class Ui_SearchUsers(object):
 
         self.retranslateUi()
 
+#Search box is a class so I can combine all searchbox objects into one.
 class SearchBox():
     
     def __init__(self,rectangle,resultType,pic,button,name,typeOfSearch,homework):
@@ -2554,14 +2557,14 @@ class SearchBox():
         if os.path.isfile(path + pic):
             self.pic.setPixmap(QtGui.QPixmap(_fromUtf8(path + pic)))
 
-
+    #Hides box
     def hide_all(self):
         self.rectangle.hide()
         self.type.hide()
         self.pic.hide()
         self.button.hide()
         self.name.hide()
-
+    #Show box
     def show_all(self):
         self.rectangle.show()
         self.type.show()
@@ -2570,7 +2573,7 @@ class SearchBox():
         self.name.show()
 
     def open_window(self):
-
+        #Giving the button different function depending on what context it is used in.
         if self.typeOfSearch == "Homework":
             self.edit_grade()
             return
@@ -2672,7 +2675,7 @@ class Ui_ClassListWindow(object):
             self.subjectCombo.setGeometry(QtCore.QRect(170, 100, 421, 31))
             self.subjectCombo.setObjectName(_fromUtf8("subjectCombo"))
 
-
+            #Selecting all subjects
             c.execute("SELECT fullname FROM subjects ORDER BY fullname ASC")
             data = c.fetchall()
             for i in range(len(data)):
@@ -2852,6 +2855,9 @@ class Ui_ClassListWindow(object):
     def retranslateUi(self, ClassListWindow):
         self.search()
         ClassListWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
+
+        #Similar to the search window - going through the data and adding the data to result boxes. If
+        # not enough data then hide the box
         if len(self.data) >= 1+((self.page-1)*8):
             self.class1.retranslateUi(self.data[0+(self.page-1)*8][3],self.data[0+(self.page-1)*8][2])
             self.class1.show_all()
@@ -2937,6 +2943,8 @@ class Ui_ClassListWindow(object):
 
     def search(self):
         self.data = []
+        #Depending on the context used in - searches will be different. Will either show a students classes
+        #or all classes.
         if self.typeOfSearch == "Search":
             c.execute("SELECT * FROM classes WHERE subject = :subject",{"subject":self.subject})
             data = list(c.fetchall())
@@ -2959,9 +2967,6 @@ class Ui_ClassListWindow(object):
             data = c.fetchall()
 
 
-
-
-
     def class_button(self):
         self.showClassesPage = EditWindow()
         self.showClassesUi = Ui_ClassListWindow()
@@ -2982,7 +2987,8 @@ class Ui_ClassListWindow(object):
         self.retranslateUi(self.window)
 
         
-
+#UsersClass is another class for a box combining all objects into one making it easier
+#to communicate with.
 class UsersClass():
 
     def __init__(self,main,remove,typeOfWindow,allClasses,typeOfUser,username,window):
@@ -3001,6 +3007,7 @@ class UsersClass():
         self.id = id
         self.subject = subject
         self.main.setText(_translate("ClassListWindow",id + " - " + subject,None))
+        #Depending on the context - the buttons with do different things.
         if self.type == "List":
             if self.typeOfUser == "Teacher":
                 self.remove.setText(_translate("ClassListWindow","Edit",None))
@@ -3258,7 +3265,8 @@ class Ui_HomeWorkWindow(object):
                       {"username":currentUser.username})
             data = c.fetchall()
             grade = data[0][0]
-            print(grade)
+
+            #Colourcoding grade based on how good it is.
             if grade != None and grade != "Completed":
                 self.grade.setText(_translate("MainWindow", grade, None))
                 if grade == "A*" or grade == "A":
@@ -3283,19 +3291,20 @@ class Ui_HomeWorkWindow(object):
     def create(self):
         classid = self.classCombo.currentText()
         duedate = str(self.dateEdit.date().toPyDate())
-        duedate = duedate[8:]+ "-"+duedate[5:7]+"-"+duedate[:4]
+        duedate = duedate[:4]+ "-"+duedate[5:7]+"-"+duedate[8:]
         title = self.titleEdit.text()
         desc = self.descriptionEdit.toPlainText()
         homeworkId = classid + "_"
-        length = len(homeworkId)-1
+        length = len(homeworkId)
 
         c.execute("SELECT homeworkid FROM homework WHERE homeworkid LIKE :homeworkid ORDER BY homeworkid ASC",
                   {"homeworkid":homeworkId+ "%"})
-        homeworkid += "1"
+        homeworkId += "1"
         data = list(c.fetchall())
         newdata = []
         for i in range(len(data)):
             newdata.append(data[i][0])
+        #Generating homeworkid
         if homeworkId in newdata:
             chosen = False
             while not chosen:
@@ -3303,9 +3312,13 @@ class Ui_HomeWorkWindow(object):
                     homeworkId = homeworkId[:length]+str(int(homeworkId[length:])+1)
                 else:
                     chosen = True
+                    
         c.execute("INSERT INTO homework VALUES (:homeworkid,:classid,:duedate,:title,:description)",
                   {"homeworkid":homeworkId,"classid":classid,"duedate":duedate,"title":title,"description":desc})
+        
+        #Adding a column to the classId for the homework. All students grades will be stored here.
         c.execute("ALTER TABLE "+classid+" ADD "+ homeworkId+ " text;")
+        
         conn.commit()
         self.window.hide()
         self.newWindow = EditWindow()
@@ -3588,10 +3601,6 @@ class Ui_ViewHomeworkWindow(object):
         self.topTitle_4.raise_()
         self.topTitle_7.raise_()
         self.topDesc_7.raise_()
-        self.amountLabel.raise_()
-        self.previousButton.raise_()
-        self.nextButton.raise_()
-        self.pageNumber.raise_()
         self.topButton_3.raise_()
         self.topButton_2.raise_()
         self.topButton_5.raise_()
@@ -3599,6 +3608,7 @@ class Ui_ViewHomeworkWindow(object):
         self.topButton_4.raise_()
         self.topButton_6.raise_()
         self.topButton.raise_()
+        
         ViewHomeworkWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(ViewHomeworkWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
@@ -3613,7 +3623,7 @@ class Ui_ViewHomeworkWindow(object):
         
 
     def retranslateUi(self, ViewHomeworkWindow):
-
+        #Adding homeworks where appropriate
         if len(self.homeworks) >= 1+((self.page-1)*7):
             if len(self.homeworks[0+(self.page-1)*7][3]) > 45:
                    self.homeworks[0+(self.page-1)*7][3]= self.homeworks[0+(self.page-1)*7][3][:42]+"..."
@@ -3710,6 +3720,7 @@ class Ui_ViewHomeworkWindow(object):
         self.nextButton.setText(_translate("ViewHomeworkWindow", "Next", None))
         self.pageNumber.setText(_translate("ViewHomeworkWindow", str(self.page), None))
 
+    #This button will filter between past and future homework
     def change_type(self):
         if self.typeOfWindow == "Future":
             self.typeOfWindow = "Past"
@@ -3736,53 +3747,37 @@ class Ui_ViewHomeworkWindow(object):
         self.retranslateUi(self.window)
 
     def search(self):
+        today = datetime.datetime.today().strftime('%Y-%m-%d')
         if self.classid != "All":
-            c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":self.classid})
-            data = c.fetchall()
-            new = []
-            
             if self.typeOfWindow == "Future":
-                for homework in data:
-                    pass
-
+                c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate >= :date",{"classid":self.classid,"date":today})
             else:
-                c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate > :date",{"classid":self.classid,"date":date})
-            temp = c.fetchall()
-            if temp != None:
-                data = list(temp)
-            else:
+                c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate < :date",{"classid":self.classid,"date":today})
+            data = c.fetchall()
+            if data == None:
                 data = []
+            else:
+                data = list(data)
+            
+            
             
         else:
             data = []
             for classid in self.data:
                 if self.typeOfWindow == "Future":
-                    c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":classid[0]})
-                    print(data)
+                    c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate >= :date",{"classid":classid[0],"date":today})
                 else:
-                    c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":classid[0]})
+                    c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate < :date",{"classid":classid[0],"date":today})
                 temp = c.fetchall()
                 if temp != None:
                     data.extend(list(temp))
 
-        data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%d-%m-%Y")))
+        data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%Y-%m-%d")))
+        if self.typeOfWindow != "Future"
+            data = data.reverse()
         self.homeworks = data
 
-def is_future(date):
-    today = datetime.datetime.today().strftime('%d-%m-%Y')
-    temp = datetime.strptime(date, '%d-%m-%Y')
-    if today <= temp:
-        return True
-    else:
-        return False
 
-def find_past(array):
-    today = datetime.datetime.today().strftime('%d-%m-%Y')
-    temp = datetime.strptime(date, '%d-%m-%Y')
-    if today > temp:
-        return True
-    else:
-        return False
     
     
 
