@@ -29,6 +29,7 @@ import os
 from difflib import SequenceMatcher
 from zxcvbn import zxcvbn
 import time
+import datetime
 
 
 path = os.getcwd()
@@ -362,11 +363,6 @@ class Ui_WelcomeWindow(object):
         self.homeworkTitle.setFont(titlefont4)
         self.homeworkTitle.setObjectName(_fromUtf8("homeworkTitle"))
 
-        #Message Title
-        self.messageTitle = QtGui.QLabel(self.centralwidget)
-        self.messageTitle.setGeometry(QtCore.QRect(80, 330, 481, 41))
-        self.messageTitle.setFont(titlefont4)
-        self.messageTitle.setObjectName(_fromUtf8("messageTitle"))
 
         #View Homework/Notices Button
         self.viewButton = QtGui.QPushButton(self.centralwidget)
@@ -380,16 +376,6 @@ class Ui_WelcomeWindow(object):
 "text-decoration: underline;\n"
 "border: 0px;}"))
         self.viewButton.setObjectName(_fromUtf8("viewButton"))
-
-        #View Messages Button
-        self.viewButton_2 = QtGui.QPushButton(self.centralwidget)
-        self.viewButton_2.setGeometry(QtCore.QRect(460, 528, 111, 23))
-        self.viewButton_2.setFont(font)
-        self.viewButton_2.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-"color: rgb(0, 0, 255);\n"
-"text-decoration: underline;\n"
-"border: 0px;}"))
-        self.viewButton_2.setObjectName(_fromUtf8("viewButton_2"))
 
 
         ##TOP RESULTS
@@ -461,93 +447,67 @@ class Ui_WelcomeWindow(object):
         self.top3 = WindowButtons(self.topButton_3,self.topTitle_3,self.topDesc_3,"Homework")
 
 
-        ## BOTTOM RESULTS
+        #Achievement Point Box
 
-        ## RESULT ONE
-        self.bottomTitle = QtGui.QLabel(self.centralwidget)
-        self.bottomTitle.setGeometry(QtCore.QRect(90, 385, 461, 21))
-        self.bottomTitle.setFont(labelfont3)
-        self.bottomTitle.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.bottomTitle.setObjectName(_fromUtf8("bottomTitle"))
-        
-        self.bottomDesc = QtGui.QLabel(self.centralwidget)
-        self.bottomDesc.setGeometry(QtCore.QRect(90, 405, 461, 21))
-        self.bottomDesc.setFont(labelfont4)
-        self.bottomDesc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.bottomDesc.setObjectName(_fromUtf8("bottomDesc"))
+        #Number
+        self.achievementNumber = QtGui.QLabel(self.centralwidget)
+        self.achievementNumber.setGeometry(QtCore.QRect(160, 410, 101, 61))
+        self.achievementNumber.setFont(numberfont)
+        self.achievementNumber.setAutoFillBackground(False)
+        self.achievementNumber.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+        "background-color: rgb(0, 255, 0);}\n"
+        ""))    
+        self.achievementNumber.setAlignment(QtCore.Qt.AlignCenter)
+        self.achievementNumber.setObjectName(_fromUtf8("achievementNumber"))
 
-        self.bottomButton = QtGui.QPushButton(self.centralwidget)
-        self.bottomButton.setGeometry(QtCore.QRect(80, 378, 481, 51))
-        self.bottomButton.setText(_fromUtf8(""))
-        self.bottomButton.setObjectName(_fromUtf8("bottomButton"))
+        #Title
+        self.achievementTitle = QtGui.QLabel(self.centralwidget)
+        self.achievementTitle.setGeometry(QtCore.QRect(160, 370, 101, 41))
+        self.achievementTitle.setFont(typefont)
+        self.achievementTitle.setAutoFillBackground(False)
+        self.achievementTitle.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+        "background-color: rgb(255, 255, 255);}\n"
+        ""))
+        self.achievementTitle.setAlignment(QtCore.Qt.AlignCenter)
+        self.achievementTitle.setObjectName(_fromUtf8("achievementTitle"))
 
-        self.bottom1 = WindowButtons(self.bottomButton,self.bottomTitle,self.bottomDesc,"Message")
 
-        ## RESULT 2
-        self.bottomDesc_2 = QtGui.QLabel(self.centralwidget)
-        self.bottomDesc_2.setGeometry(QtCore.QRect(90, 455, 461, 21))
-        self.bottomDesc_2.setFont(labelfont4)
-        self.bottomDesc_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.bottomDesc_2.setObjectName(_fromUtf8("bottomDesc_2"))
-        
-        self.bottomButton_2 = QtGui.QPushButton(self.centralwidget)
-        self.bottomButton_2.setGeometry(QtCore.QRect(80, 428, 481, 51))
-        self.bottomButton_2.setText(_fromUtf8(""))
-        self.bottomButton_2.setObjectName(_fromUtf8("bottomButton_2"))
-        
-        self.bottomTitle_2 = QtGui.QLabel(self.centralwidget)
-        self.bottomTitle_2.setGeometry(QtCore.QRect(90, 435, 461, 21))
-        self.bottomTitle_2.setFont(labelfont3)
-        self.bottomTitle_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.bottomTitle_2.setObjectName(_fromUtf8("bottomTitle_2"))
+        #Behaviour Point Box
+        #Number
+        self.behaviourNumber = QtGui.QLabel(self.centralwidget)
+        self.behaviourNumber.setGeometry(QtCore.QRect(370, 410, 101, 61))
+        self.behaviourNumber.setFont(numberfont)
+        self.behaviourNumber.setAutoFillBackground(False)
+        self.behaviourNumber.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+        "background-color: rgb(255, 0, 0);}"))
+        self.behaviourNumber.setAlignment(QtCore.Qt.AlignCenter)
+        self.behaviourNumber.setObjectName(_fromUtf8("behaviourNumber"))
 
-        self.bottom2 = WindowButtons(self.bottomButton_2,self.bottomTitle_2,self.bottomDesc_2,"Message")
-
-        ## RESULT THREE
-        self.bottomTitle_3 = QtGui.QLabel(self.centralwidget)
-        self.bottomTitle_3.setGeometry(QtCore.QRect(90, 485, 461, 21))
-        self.bottomTitle_3.setFont(labelfont3)
-        self.bottomTitle_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.bottomTitle_3.setObjectName(_fromUtf8("bottomTitle_3"))
-        
-        self.bottomDesc_3 = QtGui.QLabel(self.centralwidget)
-        self.bottomDesc_3.setGeometry(QtCore.QRect(90, 505, 461, 21))
-        self.bottomDesc_3.setFont(labelfont4)
-        self.bottomDesc_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
-        self.bottomDesc_3.setObjectName(_fromUtf8("bottomDesc_3"))
-        
-        self.bottomButton_3 = QtGui.QPushButton(self.centralwidget)
-        self.bottomButton_3.setGeometry(QtCore.QRect(80, 478, 481, 51))
-        self.bottomButton_3.setText(_fromUtf8(""))
-        self.bottomButton_3.setObjectName(_fromUtf8("bottomButton_3"))
-
-        self.bottom3 = WindowButtons(self.bottomButton_3,self.bottomTitle_3,self.bottomDesc_3,"Message")
+        #Title
+        self.behaviourTitle = QtGui.QLabel(self.centralwidget)
+        self.behaviourTitle.setGeometry(QtCore.QRect(370, 370, 101, 41))
+        self.behaviourTitle.setFont(typefont)
+        self.behaviourTitle.setAutoFillBackground(False)
+        self.behaviourTitle.setStyleSheet(_fromUtf8("QLabel{border: 1px solid black;\n"
+        "background-color: rgb(255, 255, 255);}\n"
+        ""))
+        self.behaviourTitle.setAlignment(QtCore.Qt.AlignCenter)
+        self.behaviourTitle.setObjectName(_fromUtf8("behaviourTitle"))
 
         #Sorting out alignment
-#        self.profilePic.raise_()
+        self.profilePic.raise_()
         self.welcomeLabel.raise_()
         self.homeworkTitle.raise_()
-        self.messageTitle.raise_()
         self.viewButton.raise_()
-        self.viewButton_2.raise_()
         self.topTitle.raise_()
         self.topDesc.raise_()
         self.topTitle_2.raise_()
         self.topDesc_2.raise_()
         self.topTitle_3.raise_()
         self.topDesc_3.raise_()
-        self.bottomDesc_2.raise_()
-        self.bottomTitle_2.raise_()
-        self.bottomTitle.raise_()
-        self.bottomDesc.raise_()
-        self.bottomTitle_3.raise_()
-        self.bottomDesc_3.raise_()
         self.topButton.raise_()
         self.topButton_2.raise_()
         self.topButton_3.raise_()
-        self.bottomButton.raise_()
-        self.bottomButton_2.raise_()
-        self.bottomButton_3.raise_()
 
 
         
@@ -588,6 +548,11 @@ class Ui_WelcomeWindow(object):
             self.menuUsers = QtGui.QMenu(self.menubar)
             self.menuUsers.setObjectName(_fromUtf8("menuUsers"))
             self.menubar.addAction(self.menuUsers.menuAction())
+            #View Users
+            self.viewUsers = QtGui.QAction(MainWindow)
+            self.viewUsers.setObjectName(_fromUtf8("viewUsers"))
+            self.viewUsers.setStatusTip("View Users")
+            self.viewUsers.triggered.connect(self.view_users)
 
         if currentUser.type == "Teacher":
             self.addHomework = QtGui.QAction(MainWindow)
@@ -596,52 +561,48 @@ class Ui_WelcomeWindow(object):
             self.menuHomework.addAction(self.addHomework)
             self.addHomework.triggered.connect(self.create_homework)
 
-                            #View Users
-            self.viewUsers = QtGui.QAction(MainWindow)
-            self.viewUsers.setObjectName(_fromUtf8("viewUsers"))
-            self.viewUsers.setStatusTip("View Users")
-            self.viewUsers.triggered.connect(self.view_users)
+
 
             
             
 
-            if currentUser.type == "Admin":
-                #Add Class
-                self.addClass = QtGui.QAction(MainWindow)
-                self.addClass.setObjectName(_fromUtf8("addClass"))
-                self.addClass.setStatusTip("Create a new class")
-                self.addClass.triggered.connect(self.create_class)
+        if currentUser.type == "Admin":
+            #Add Class
+            self.addClass = QtGui.QAction(MainWindow)
+            self.addClass.setObjectName(_fromUtf8("addClass"))
+            self.addClass.setStatusTip("Create a new class")
+            self.addClass.triggered.connect(self.create_class)
 
-                #Add Subject
-                self.addSubject = QtGui.QAction(MainWindow)
-                self.addSubject.setObjectName(_fromUtf8("addSubject"))
-                self.addSubject.setStatusTip("Create a new subject")
-                self.addSubject.triggered.connect(self.create_subject)
+            #Add Subject
+            self.addSubject = QtGui.QAction(MainWindow)
+            self.addSubject.setObjectName(_fromUtf8("addSubject"))
+            self.addSubject.setStatusTip("Create a new subject")
+            self.addSubject.triggered.connect(self.create_subject)
 
-                #Add Admin
-                self.addAdmin = QtGui.QAction(MainWindow)
-                self.addAdmin.setObjectName(_fromUtf8("addAdmin"))
-                self.addAdmin.setStatusTip("Create a new Admin account")
-                self.addAdmin.triggered.connect(self.create_admin)
+            #Add Admin
+            self.addAdmin = QtGui.QAction(MainWindow)
+            self.addAdmin.setObjectName(_fromUtf8("addAdmin"))
+            self.addAdmin.setStatusTip("Create a new Admin account")
+            self.addAdmin.triggered.connect(self.create_admin)
 
-                #Add Teacher
-                self.addTeacher = QtGui.QAction(MainWindow)
-                self.addTeacher.setObjectName(_fromUtf8("addTeacher"))
-                self.addTeacher.setStatusTip("Create a new Teacher account")
-                self.addTeacher.triggered.connect(self.create_teacher)
+            #Add Teacher
+            self.addTeacher = QtGui.QAction(MainWindow)
+            self.addTeacher.setObjectName(_fromUtf8("addTeacher"))
+            self.addTeacher.setStatusTip("Create a new Teacher account")
+            self.addTeacher.triggered.connect(self.create_teacher)
 
-                #Add Student
-                self.addStudent = QtGui.QAction(MainWindow)
-                self.addStudent.setObjectName(_fromUtf8("addStudent"))
-                self.addStudent.setStatusTip("Create a new student account")
-                self.addStudent.triggered.connect(self.create_student)
-                
-                self.menuSubjects.addAction(self.addSubject)
-                self.menuUsers.addAction(self.addAdmin)
-                self.menuUsers.addAction(self.addTeacher)
-                self.menuUsers.addAction(self.addStudent)
-                self.menuUsers.addAction(self.viewUsers)
-                self.menuClasses.addAction(self.addClass)
+            #Add Student
+            self.addStudent = QtGui.QAction(MainWindow)
+            self.addStudent.setObjectName(_fromUtf8("addStudent"))
+            self.addStudent.setStatusTip("Create a new student account")
+            self.addStudent.triggered.connect(self.create_student)
+            
+            self.menuSubjects.addAction(self.addSubject)
+            self.menuUsers.addAction(self.addAdmin)
+            self.menuUsers.addAction(self.addTeacher)
+            self.menuUsers.addAction(self.addStudent)
+            self.menuUsers.addAction(self.viewUsers)
+            self.menuClasses.addAction(self.addClass)
 
             self.menubar.addAction(self.menuSubjects.menuAction())
             self.menubar.addAction(self.menuClasses.menuAction())
@@ -690,13 +651,13 @@ class Ui_WelcomeWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Welcome Window", None))
         self.welcomeLabel.setText(_translate("MainWindow", "Welcome back,\n"
 "Tom!", None))
-        self.homeworkTitle.setText(_translate("MainWindow", "My Homework: (5 Due Soon)", None))
-        self.messageTitle.setText(_translate("MainWindow", "My Messages: (17 Unread)", None))
+        self.homeworkTitle.setText(_translate("MainWindow", "My Homework: (x Due Soon)", None))
         self.viewButton.setText(_translate("MainWindow", "Click to view more", None))
-        self.viewButton_2.setText(_translate("MainWindow", "Click to view more", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuClasses.setTitle(_translate("MainWindow", "Classes", None))
         self.menuMessages.setTitle(_translate("MainWindow", "Messages", None))
+        self.behaviourTitle.setText(_translate("MainWindow","Behaviour\nPoints",None))
+        self.achievementTitle.setText(_translate("MainWindow","Achievement\nPoints",None))
         
         if currentUser.type != "Admin":
             self.menuHomework.setTitle(_translate("MainWindow", "Homework", None))
@@ -766,7 +727,7 @@ class Ui_WelcomeWindow(object):
     def view_homework(self):
         self.viewHomeworkPage = EditWindow()
         self.viewhomeworkui = Ui_ViewHomeworkWindow()
-        self.viewhomeworkui.setupUi(self.viewHomeworkPage)
+        self.viewhomeworkui.setupUi(self.viewHomeworkPage,"Future")
         self.viewHomeworkPage.show()
 
     
@@ -822,7 +783,6 @@ class WindowButtons():
         if self.typeOfBox == "Homework":
             c.execute("SELECT * FROM homework WHERE homeworkid = :id",{"id":self.id})
             lesson = c.fetchone()
-            print(lesson[0],lesson[1],lesson[2],lesson[3],lesson[4])
             self.homeworkPage = EditWindow()
             self.homeworkui = Ui_HomeWorkWindow()
             self.homeworkui.setupUi(self.homeworkPage,Homework(lesson[0],lesson[1],lesson[2],lesson[3],lesson[4]))
@@ -1661,7 +1621,7 @@ class Ui_EditUserWindow(object):
                   {"first":self.user.first,"last":self.user.last,"username":self.user.username,"password":self.user.password,"dob":self.user.dob,"email":self.user.email,"type":self.user.type,"pic":self.user.pic})
         if self.user.type == "Student":
             self.user.yeargroup = self.yearGroup.currentText()
-            c.execute("INSERT INTO student VALUES (:username,:yeargroup,'NULL','NULL','NULL','NULL')",{"username":self.user.username,"yeargroup":self.user.yeargroup})
+            c.execute("INSERT INTO student VALUES (:username,:yeargroup,0,0)",{"username":self.user.username,"yeargroup":self.user.yeargroup})
         conn.commit()
         self.window.hide()
         self.newWindow = EditWindow()
@@ -3326,17 +3286,21 @@ class Ui_HomeWorkWindow(object):
         duedate = duedate[8:]+ "-"+duedate[5:7]+"-"+duedate[:4]
         title = self.titleEdit.text()
         desc = self.descriptionEdit.toPlainText()
-        homeworkId = classid + "_1"
-        length = len(homeworkId)
+        homeworkId = classid + "_"
+        length = len(homeworkId)-1
 
         c.execute("SELECT homeworkid FROM homework WHERE homeworkid LIKE :homeworkid ORDER BY homeworkid ASC",
-                  {"homeworkid":classid})
+                  {"homeworkid":homeworkId+ "%"})
+        homeworkid += "1"
         data = list(c.fetchall())
-        if homeworkId in data:
+        newdata = []
+        for i in range(len(data)):
+            newdata.append(data[i][0])
+        if homeworkId in newdata:
             chosen = False
             while not chosen:
-                if homeworkId in data:
-                    homeworkId = homeworkId[:length]+str(int(homework[length:])+1)
+                if homeworkId in newdata:
+                    homeworkId = homeworkId[:length]+str(int(homeworkId[length:])+1)
                 else:
                     chosen = True
         c.execute("INSERT INTO homework VALUES (:homeworkid,:classid,:duedate,:title,:description)",
@@ -3362,9 +3326,10 @@ class Ui_HomeWorkWindow(object):
 
 
 class Ui_ViewHomeworkWindow(object):
-    def setupUi(self, ViewHomeworkWindow):
+    def setupUi(self, ViewHomeworkWindow,typeOfWindow):
         self.window = ViewHomeworkWindow
         self.page = 1
+        self.typeOfWindow = typeOfWindow
 
         
         #Setting Window Up
@@ -3376,6 +3341,14 @@ class Ui_ViewHomeworkWindow(object):
         "background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
         "QPushButton{background: transparent;"
         "border: 1px solid black;}"))
+
+        #Type Button
+        self.typeBtn = QtGui.QPushButton(self.centralwidget)
+        self.typeBtn.setGeometry(QtCore.QRect(0, 0, 75, 51))
+        self.typeBtn.setFont(labelfont)
+        self.typeBtn.setObjectName(_fromUtf8("typeBtn"))
+        self.typeBtn.clicked.connect(self.change_type)
+
 
         #Homework Label
         self.myHomeworkLabel = QtGui.QLabel(self.centralwidget)
@@ -3737,6 +3710,14 @@ class Ui_ViewHomeworkWindow(object):
         self.nextButton.setText(_translate("ViewHomeworkWindow", "Next", None))
         self.pageNumber.setText(_translate("ViewHomeworkWindow", str(self.page), None))
 
+    def change_type(self):
+        if self.typeOfWindow == "Future":
+            self.typeOfWindow = "Past"
+        else:
+            self.typeOfWindow = "Future"
+        self.search()
+
+
     def previous_page(self):
         self.page -= 1
         self.retranslateUi(self.window)
@@ -3757,6 +3738,15 @@ class Ui_ViewHomeworkWindow(object):
     def search(self):
         if self.classid != "All":
             c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":self.classid})
+            data = c.fetchall()
+            new = []
+            
+            if self.typeOfWindow == "Future":
+                for homework in data:
+                    pass
+
+            else:
+                c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate > :date",{"classid":self.classid,"date":date})
             temp = c.fetchall()
             if temp != None:
                 data = list(temp)
@@ -3766,13 +3756,35 @@ class Ui_ViewHomeworkWindow(object):
         else:
             data = []
             for classid in self.data:
-                c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":classid[0]})
+                if self.typeOfWindow == "Future":
+                    c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":classid[0]})
+                    print(data)
+                else:
+                    c.execute("SELECT * FROM homework WHERE classid = :classid",{"classid":classid[0]})
                 temp = c.fetchall()
                 if temp != None:
                     data.extend(list(temp))
-                    
+
         data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%d-%m-%Y")))
         self.homeworks = data
+
+def is_future(date):
+    today = datetime.datetime.today().strftime('%d-%m-%Y')
+    temp = datetime.strptime(date, '%d-%m-%Y')
+    if today <= temp:
+        return True
+    else:
+        return False
+
+def find_past(array):
+    today = datetime.datetime.today().strftime('%d-%m-%Y')
+    temp = datetime.strptime(date, '%d-%m-%Y')
+    if today > temp:
+        return True
+    else:
+        return False
+    
+    
 
 class Ui_GradeWindow(object):
     def setupUi(self, GradeWindow,homework,username,first,last):
