@@ -1475,6 +1475,19 @@ class Ui_EditUserWindow(object):
             #MoveY is used so that if it is a student certain objects will be placed lower down on the window
             moveY += 30
 
+            self.achievementButton = QtGui.QPushButton(self.centralwidget)
+            self.achievementButton.setGeometry(QtCore.QRect(15, 380, 186, 27))
+            self.achievementButton.setFont(labelfont)
+            self.achievementButton.setObjectName(_fromUtf8("achievementButton"))
+            self.achievementButton.clicked.connect(self.achievement_window)
+
+            self.behaviourButton = QtGui.QPushButton(self.centralwidget)
+            self.behaviourButton.setGeometry(QtCore.QRect(15, 410, 186, 27))
+            self.behaviourButton.setFont(labelfont)
+            self.behaviourButton.setObjectName(_fromUtf8("behaviourButton"))
+            self.behaviourButton.clicked.connect(self.behaviour_window)
+
+
         #Profile Picture
         self.profilePic = QtGui.QLabel(self.centralwidget)
         self.profilePic.setGeometry(QtCore.QRect(30, 10, 126, 126))
@@ -1570,8 +1583,6 @@ class Ui_EditUserWindow(object):
         self.firstLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.firstLabel.setObjectName(_fromUtf8("firstLabel"))
 
-
-
         #Edit button
         self.editBtn = QtGui.QPushButton(self.centralwidget)
         self.editBtn.setGeometry(QtCore.QRect(470, 350+moveY, 75, 27))
@@ -1648,6 +1659,8 @@ class Ui_EditUserWindow(object):
                 EditUserWindow.setWindowTitle(_translate("EditUserWindow", "Edit Student Page", None))
                 self.yearGroupLabel.setText(_translate("EditUserWindow", "YEAR GROUP", None))
                 self.titleLabel.setText(_translate("EditUserWindow", "EDIT STUDENT", None))
+                self.achievementButton.setText(_translate("EditUserWindow", "Add Achievements", None))
+                self.behaviourButton.setText(_translate("EditUserWindow", "Add Behaviours", None))
                 if self.user.yeargroup == "13":
                     self.yearGroup.setCurrentIndex(1)
 
@@ -1785,6 +1798,18 @@ class Ui_EditUserWindow(object):
         else:
             self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,"N/A","List")
         self.selectClass.show()
+
+    def behaviour_window(self):
+        self.behaviourWindow = EditWindow()
+        self.behaviourUi = Ui_PointsWindow()
+        self.behaviourUi.setupUi(self.behaviourWindow,"behaviour",self.user)
+        self.behaviourWindow.show()
+
+    def achievement_window(self):
+        self.achievementWindow = EditWindow()
+        self.achievementUi = Ui_PointsWindow()
+        self.achievementUi.setupUi(self.achievementWindow,"achievement",self.user)
+        self.achievementWindow.show()
 
 
 class Ui_SearchUsers(object):
@@ -3135,7 +3160,7 @@ class UsersClass():
         self.classui = Ui_CreateClassWindow()
         c.execute("SELECT * FROM classes WHERE id = :id",{"id":self.id})
         data = c.fetchone()
-        self.classui.setupUi(self.classPage,Class(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]))
+        self.classui.setupUi(self.classPage,Class(data[0],data[1],data[2],data[3],data[4],data[5],data[6]))
         self.classPage.show()
 
     def add_student(self):
@@ -3972,6 +3997,7 @@ class Ui_GradeWindow(object):
         self.nameLabel.setText(_translate("GradeWindow", self.first + " " + self.last, None))
         self.gradeLabel.setText(_translate("GradeWindow", "GRADE:", None))
         self.saveBtn.setText(_translate("GradeWindow", "Update", None))
+        GradeWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
 
     def save(self):
         grade = self.gradeCombo.currentText()
@@ -3982,6 +4008,99 @@ class Ui_GradeWindow(object):
             QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                     QtGui.QMessageBox.Ok)
 
+
+class Ui_PointsWindow(object):
+    def setupUi(self, MainWindow,typeOfWindow,student):
+        self.window = MainWindow
+        self.typeOfWindow = typeOfWindow
+        self.student = student
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.resize(449, 310)
+        self.centralwidget = QtGui.QWidget(MainWindow)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        MainWindow.setStyleSheet(css)
+
+        #Save Button
+        self.saveBtn = QtGui.QPushButton(self.centralwidget)
+        self.saveBtn.setGeometry(QtCore.QRect(366, 250, 75, 27))
+        self.saveBtn.setFont(labelfont)
+        self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
+        self.saveBtn.clicked.connect(self.save)
+
+
+        #Reason Text Edit/Input
+        self.reasonEdit = QtGui.QPlainTextEdit(self.centralwidget)
+        self.reasonEdit.setGeometry(QtCore.QRect(90, 60, 351, 181))
+        self.reasonEdit.setObjectName(_fromUtf8("reasonEdit"))
+
+        #Reason Label
+        self.reasonLabel = QtGui.QLabel(self.centralwidget)
+        self.reasonLabel.setGeometry(QtCore.QRect(-60, 50, 141, 51))
+        self.reasonLabel.setFont(labelfont)
+        self.reasonLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.reasonLabel.setObjectName(_fromUtf8("reasonLabel"))
+
+        #Points Label
+        self.pointsLabel = QtGui.QLabel(self.centralwidget)
+        self.pointsLabel.setGeometry(QtCore.QRect(-60, 0, 141, 51))
+        self.pointsLabel.setFont(labelfont)
+        self.pointsLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.pointsLabel.setObjectName(_fromUtf8("pointsLabel"))
+
+        #Points Edit
+        self.pointEdit = QtGui.QSpinBox(self.centralwidget)
+        self.pointEdit.setGeometry(QtCore.QRect(90, 10, 351, 31))
+        self.pointEdit.setObjectName(_fromUtf8("pointEdit"))
+        self.pointEdit.setMaximum(9)
+        self.pointEdit.setMinimum(1)
+        
+        
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 449, 21))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        MainWindow.setStatusBar(self.statusbar)
+        
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        if self.typeOfWindow == "achievement":
+            MainWindow.setWindowTitle(_translate("MainWindow", "Add Achievement Points", None))
+        else:
+            MainWindow.setWindowTitle(_translate("MainWindow", "Add Behaviour Points", None))
+        self.saveBtn.setText(_translate("MainWindow", "Save", None))
+        self.reasonLabel.setText(_translate("MainWindow", "REASON:", None))
+        self.pointsLabel.setText(_translate("MainWindow", "POINTS:", None))
+        MainWindow.setWindowIcon(QtGui.QIcon('robertsmyth.png'))
+
+    def save(self):
+        desc = self.reasonEdit.toPlainText()
+        points = self.pointEdit.value()
+        
+        if self.typeOfWindow == "achievement":
+            self.student.achievementpoints += points
+            c.execute("INSERT INTO achievementpoints VALUES (:teacher,:student,:points,:reason)",
+                      {"teacher":currentUser.username,"student":self.student.username,"points":points,"reason":desc})
+            c.execute("UPDATE student SET achievementpoints = :points WHERE username = :username",
+                      {"points":self.student.achievementpoints,"username":self.student.username})
+        else:
+            self.student.behaviourpoints += points
+            c.execute("INSERT INTO behaviourpoints VALUES (:teacher,:student,:points,:reason)",
+                      {"teacher":currentUser.username,"student":self.student,"points":points,"reason":desc})
+            c.execute("UPDATE student SET behaviourpoints = :points WHERE username = :username",
+                      {"points":self.student.achievementpoints,"username":self.student.username})
+        conn.commit()
+        self.saved_window()
+        self.window.hide()
+
+        def saved_window(self):
+        QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
+                                   QtGui.QMessageBox.Ok)
 #Use this as MainWindow for the close event popup window
 class EditWindow(QtGui.QMainWindow):
     def closeEvent(self,event):
