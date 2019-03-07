@@ -624,9 +624,15 @@ class Ui_WelcomeWindow(object):
             self.menuUsers.addAction(self.addStudent)
             self.menuUsers.addAction(self.viewUsers)
             self.menuClasses.addAction(self.addClass)
-
             self.menubar.addAction(self.menuSubjects.menuAction())
-            self.menubar.addAction(self.menuClasses.menuAction())
+
+        else:
+            self.viewClasses = QtGui.QAction(MainWindow)
+            self.viewClasses.setObjectName(_fromUtf8("viewClasses"))
+            self.viewClasses.setStatusTip("View your classes")
+            self.viewClasses.triggered.connect(self.class_button)
+            self.menuClasses.addAction(self.viewClasses)
+        self.menubar.addAction(self.menuClasses.menuAction())
             
 
          #Adding to the bars
@@ -756,8 +762,14 @@ class Ui_WelcomeWindow(object):
     def create_class(self):
         self.classPage = EditWindow()
         self.classui = Ui_CreateClassWindow()
-        self.classui.setupUi(self.classPage,Class("NULL","NULL","NULL","NULL"))
+        self.classui.setupUi(self.classPage,Class("NULL","NULL","NULL","NULL","NULL","NULL","NULL","NULL"))
         self.classPage.show()
+
+    def class_button(self):
+        self.showClassesPage = EditWindow()
+        self.showClassesUi = Ui_ClassListWindow()
+        self.showClassesUi.setupUi(self.showClassesPage,currentUser.username,currentUser.type,"List")
+        self.showClassesPage.show() 
 
 
     def create_homework(self):
@@ -1002,12 +1014,6 @@ class Ui_CreateClassWindow(object):
         self.createBtn.setGeometry(QtCore.QRect(530, 430, 75, 27))
         self.createBtn.setFont(labelfont)
         self.createBtn.setObjectName(_fromUtf8("createBtn"))
-        if self.currentClass.id == "NULL":
-            self.createBtn.clicked.connect(self.create_)
-        else:
-            self.createBtn.clicked.connect(self.save_changes)
-
-
         
         #Muli Choice Lesson 1 Timetable
         self.lesson1Box = QtGui.QComboBox(self.centralwidget)
@@ -1039,10 +1045,10 @@ class Ui_CreateClassWindow(object):
             
 
         #Adding Lessons to boxes
-        self.lesson1Box.addItem("N/A")
-        self.lesson2Box.addItem("N/A")
-        self.lesson3Box.addItem("N/A")
-        self.lesson4Box.addItem("N/A")
+        self.lesson1Box.addItem("NULL")
+        self.lesson2Box.addItem("NULL")
+        self.lesson3Box.addItem("NULL")
+        self.lesson4Box.addItem("NULL")
         week = ["MON","TUE","WED","THURS","FRI"]
         lessons = []
         for day in week:
@@ -1118,7 +1124,12 @@ class Ui_CreateClassWindow(object):
             if data[i][0] == self.currentClass.subject:
                 self.subjectCombo.setCurrentIndex(i)
 
-
+        if self.currentClass.id == "NULL":
+            self.createBtn.clicked.connect(self.create_)
+            
+        else:
+            self.createBtn.clicked.connect(self.save_changes)
+            self.subjectCombo.setEnabled(False)
         #Class ID Line Edit
         self.idEdit = QtGui.QLineEdit(self.centralwidget)
         self.idEdit.setGeometry(QtCore.QRect(180, 400, 351, 21))
@@ -1133,6 +1144,20 @@ class Ui_CreateClassWindow(object):
         self.idLabel.setObjectName(_fromUtf8("idLabel"))
         self.idLabel.setEnabled(False)
         
+        if self.currentClass.id == "NULL":
+            self.createBtn.clicked.connect(self.create_)
+            
+        else:
+            self.createBtn.clicked.connect(self.save_changes)
+            self.subjectCombo.setEnabled(False)
+
+        if currentUser.type == "Student" or currentUser.type == "Admin":
+            self.teacherCombo.setEnabled(False)
+            self.yearCombo.setEnabled(False)
+            self.lesson1Box.setEnabled(False)
+            self.lesson2Box.setEnabled(False)
+            self.lesson3Box.setEnabled(False)
+            self.lesson4Box.setEnabled(False)
 
 
         
@@ -1159,7 +1184,8 @@ class Ui_CreateClassWindow(object):
             self.createSubjectLabel.setText(_translate("CreateClassWindow", "EDIT CLASS", None))
             self.createBtn.setText(_translate("CreateClassWindow", "Save", None))
             self.idEdit.setText(_translate("EditUserWindow",self.currentClass.id,None))
-
+        if currentUser.type == "Student" or currentUser.type == "Teacher":
+            self.createSubjectLabel.setText(_translate("CreateClassWindow", "VIEW CLASS", None))
         self.subjectLabel.setText(_translate("CreateClassWindow", "SUBJECT", None))
         self.teacherLabel.setText(_translate("CreateClassWindow", "TEACHER", None))
         self.lesson1Label.setText(_translate("CreateClassWindow", "LESSON 1", None))
@@ -1192,8 +1218,10 @@ class Ui_CreateClassWindow(object):
                     self.currentClass.id = self.currentClass.id[:-1] + str(int(self.currentClass.id[-1])+1)
                 else:
                     chosen = True
-        c.execute("INSERT INTO classes VALUES (:yeargroup,:teacher,:subject,:id)",
-                  {"yeargroup":self.currentClass.yearGroup,"teacher":self.currentClass.teacher,"subject":self.currentClass.subject,"id":self.currentClass.id})
+        c.execute("INSERT INTO classes VALUES (:yeargroup,:teacher,:subject,:id,:lesson1,:lesson2,:lesson3,:lesson4)",
+                  {"yeargroup":self.currentClass.yearGroup,"teacher":self.currentClass.teacher,"subject":self.currentClass.subject,
+                   "id":self.currentClass.id,"lesson1":self.currentClass.lesson1,"lesson2":self.currentClass.lesson2,"lesson3":self.currentClass.lesson3
+                   ,"lesson4":self.currentClass.lesson4})
         c.execute("CREATE TABLE "+self.currentClass.id+
                   "(Student text)")
 
@@ -1211,6 +1239,10 @@ class Ui_CreateClassWindow(object):
         self.currentClass.teacher = self.teacherCombo.currentText()
         self.currentClass.teacher = self.currentClass.teacher[self.currentClass.teacher.find("(")+1:self.currentClass.teacher.find(")")]
         self.currentClass.yearGroup = self.yearCombo.currentText()[-2:]
+        self.currentClass.lesson1 = self.lesson1Box.currentText()
+        self.currentClass.lesson2 = self.lesson2Box.currentText()
+        self.currentClass.lesson3 = self.lesson3Box.currentText()
+        self.currentClass.lesson4 = self.lesson4Box.currentText()
 
     #Pop Up Window 
     def save_changes(self):
@@ -1222,7 +1254,8 @@ class Ui_CreateClassWindow(object):
     #Save functions
     def save_(self):
         self.get_details()
-        c.execute("UPDATE classes SET teacher = :teacher AND yeargroup = :yearGroup WHERE id = :id",
+        c.execute("UPDATE classes SET teacher = :teacher AND yeargroup = :yearGroup AND lesson1 = :lesson1 AND lesson2 =:lesson2"
+                  " AND lesson3 =:lesson3 AND lesson4 = :lesson4 WHERE id = :id",
                   {"teacher":self.currentClass.teacher,"yearGroup":self.currentClass.yearGroup,"id":self.currentClass.id})
         conn.commit()
         self.saved_window()
@@ -1748,7 +1781,7 @@ class Ui_EditUserWindow(object):
         self.selectClass = EditWindow()
         self.selectClassUi = Ui_ClassListWindow()
         if self.type == "Student":
-            self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,self.user.yeargroup,"List")
+            self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,"List")
         else:
             self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,"N/A","List")
         self.selectClass.show()
@@ -2672,7 +2705,7 @@ class SearchBox():
 
 
 class Ui_ClassListWindow(object):
-    def setupUi(self, ClassListWindow,username,typeOfUser,yearGroup,typeOfSearch):
+    def setupUi(self, ClassListWindow,username,typeOfUser,typeOfSearch):
 
         #Year Group can be left as NULL for instances not needed.
         #and TypeOfUser = Search to show classes window
@@ -2681,7 +2714,6 @@ class Ui_ClassListWindow(object):
         self.page = 1
         self.username = username
         self.type = typeOfUser
-        self.yearGroup = yearGroup
         self.typeOfUser = typeOfUser
         self.typeOfSearch = typeOfSearch
         self.window = ClassListWindow
@@ -2706,7 +2738,7 @@ class Ui_ClassListWindow(object):
         else:
             c.execute("SELECT id FROM classes WHERE teacher = :username",{"username":self.username})
             self.allClasses = list(c.fetchall())
-
+            
         if self.typeOfSearch == "Search":
             self.titleLabel.setGeometry(QtCore.QRect(0, 0, 641, 91))
             
@@ -2884,6 +2916,8 @@ class Ui_ClassListWindow(object):
         else:
             self.newClassButton.clicked.connect(self.class_button)
 
+        if currentUser.type == "Student" or currentUser.type == "Teacher":
+            self.newClassButton.hide()
         
         #Menu and Status Bars
         ClassListWindow.setCentralWidget(self.centralwidget)
@@ -2996,7 +3030,6 @@ class Ui_ClassListWindow(object):
             data = list(c.fetchall())
             for i in range(len(data)):
                 self.data.append(list(data[i]))
-            print(self.data)
         elif self.type == "Student":
         
             c.execute("SELECT classid FROM studentclass WHERE username = :username",{"username":self.username})
@@ -3016,7 +3049,7 @@ class Ui_ClassListWindow(object):
     def class_button(self):
         self.showClassesPage = EditWindow()
         self.showClassesUi = Ui_ClassListWindow()
-        self.showClassesUi.setupUi(self.showClassesPage,self.username,self.typeOfUser,self.yearGroup,"Search")
+        self.showClassesUi.setupUi(self.showClassesPage,self.username,self.typeOfUser,"Search")
         self.showClassesPage.show()        
 
     def show_classes(self,text):
@@ -3092,14 +3125,17 @@ class UsersClass():
 
     def show_all(self):
         self.main.show()
-        self.remove.show()
+        if currentUser.type == "Teacher" or currentUser.type == "Student":
+            self.remove.hide()
+        else:
+            self.remove.show()
 
     def open_window(self):
         self.classPage = EditWindow()
         self.classui = Ui_CreateClassWindow()
         c.execute("SELECT * FROM classes WHERE id = :id",{"id":self.id})
         data = c.fetchone()
-        self.classui.setupUi(self.classPage,Class(data[0],data[1],data[2],data[3]))
+        self.classui.setupUi(self.classPage,Class(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]))
         self.classPage.show()
 
     def add_student(self):
@@ -3295,7 +3331,8 @@ class Ui_HomeWorkWindow(object):
             self.editHomeworkLabel.setText(_translate("MainWindow", "EDIT HOMEWORK", None))
             self.gradesBtn.setText(_translate("MainWindow", "Update\nGrades", None))
         self.classLabel.setText(_translate("MainWindow", "CLASS:", None))
-        
+        if currentUser.type == "Student":
+            self.editHomeworkLabel.setText(_translate("MainWindow", "VIEW HOMEWORK", None))
         
         self.dueLabel.setText(_translate("MainWindow", "DUE DATE:", None))
         self.descriptionLabel.setText(_translate("MainWindow", "DESCRIPTION:", None))
@@ -3378,6 +3415,7 @@ class Ui_HomeWorkWindow(object):
             
 
     def edit(self):
+        #Editting and saving to the database
         duedate = str(self.dateEdit.date().toPyDate())
         duedate = duedate[:4]+ "-"+duedate[5:7]+"-"+duedate[8:]
         title = self.titleEdit.text()
@@ -3387,6 +3425,7 @@ class Ui_HomeWorkWindow(object):
         conn.commit()
 
     def grades_window(self):
+        #Creating the grades window
         self.searchPage = EditWindow()
         self.SearchUi = Ui_SearchUsers()
         self.SearchUi.setupUi(self.searchPage,"Homework",self.homework)
@@ -3440,6 +3479,7 @@ class Ui_ViewHomeworkWindow(object):
         self.classCombo.setGeometry(QtCore.QRect(140, 80, 421, 31))
         self.classCombo.setObjectName(_fromUtf8("classCombo"))
 
+        #Getting all the users classes then adding it to the combo box
         if currentUser.type == "Student":
             c.execute("SELECT classid FROM studentclass WHERE username = :username",
                       {"username":currentUser.username})
@@ -3792,10 +3832,13 @@ class Ui_ViewHomeworkWindow(object):
     def previous_page(self):
         self.page -= 1
         self.retranslateUi(self.window)
+        
     def next_page(self):
         self.page += 1
         self.retranslateUi(self.window)
+
     def new_homework(self):
+        #Open create homework window
         self.homeworkPage = EditWindow()
         self.homeworkui = Ui_HomeWorkWindow()
         self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","01/01/2001","NULL","NULL"))
@@ -3807,6 +3850,7 @@ class Ui_ViewHomeworkWindow(object):
         self.retranslateUi(self.window)
 
     def search(self):
+        #Getting todays date
         today = datetime.datetime.today().strftime('%Y-%m-%d')
         if self.classid != "All":
             if self.typeOfWindow == "Future":
@@ -3829,10 +3873,13 @@ class Ui_ViewHomeworkWindow(object):
 
                 temp = c.fetchall()
                 if temp != None:
+                    #Extending because there will be a fetch from each class.
                     data.extend(list(temp))
 
+        #Sorting by due date
         data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%Y-%m-%d")))
         if self.typeOfWindow != "Future":
+            #If user is searching for past homeworks they will want the most recent ones first.
             data.reverse()
         if data == None:
             data = []
@@ -3849,6 +3896,7 @@ class Ui_GradeWindow(object):
         self.homework = homework
         self.first = first
         self.last = last
+        #Getting grade of users homework from the database
         c.execute("SELECT "+self.homework.homeworkId+" FROM "+self.homework.classId+" WHERE Student = '"+self.username+"'")
         data = c.fetchall()
         grade = data[0][0]
@@ -3874,6 +3922,7 @@ class Ui_GradeWindow(object):
         self.gradeCombo = QtGui.QComboBox(self.centralwidget)
         self.gradeCombo.setGeometry(QtCore.QRect(130, 80, 101, 31))
         self.gradeCombo.setObjectName(_fromUtf8("gradeCombo"))
+        #Adding all the options to to Box
         self.gradeCombo.addItem("Not Completed")
         self.gradeCombo.addItem("Completed")
         self.gradeCombo.addItem("A*")
@@ -3884,6 +3933,7 @@ class Ui_GradeWindow(object):
         self.gradeCombo.addItem("E")
         self.gradeCombo.addItem("F")
         self.gradeCombo.addItem("U")
+        #Finding if the users current grade = one of the options - if so setting that as the index
         index = self.gradeCombo.findText(grade, QtCore.Qt.MatchFixedString)
         if index >= 0:
             self.gradeCombo.setCurrentIndex(index)
