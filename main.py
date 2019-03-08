@@ -1,14 +1,3 @@
-#TO DO LIST
-"""
-3 - Student Homework
-4 - Search subjects and classes
-5 - Behaviour and achievement points
-6 - Clean up homescreen
-7 - Add save function for homework
-
-
-"""
-
 #Variable formatting
 #Camelcasing for all variables.
 #Use underscores for all methods
@@ -157,8 +146,12 @@ regex=QtCore.QRegExp(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 emailvalidator = QtGui.QRegExpValidator(regex)	
 
 
-        
+#This class is the original window that opens when the program is run.
+#Here the user will sign in.
 class Ui_MainWindow(object):
+  #SetupUi is for creating all the objects in the window. This will include all the labels,
+  #images, etc. This will basically be used the same way a __init__ function is used and will
+  #be used when creating the window for the first time.
     def setupUi(self, MainWindow):
         #Creating Main Window
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
@@ -267,9 +260,12 @@ class Ui_MainWindow(object):
 
     #Close app function. When pressed the program will close and the user will no longer by able to interact with it.
     def close_app(self):
+      #QMessage Box is a small pop up dialogue window - where I am able to display a small message and the option for a
+      #Yes or No or Ok button. 
         choice = QtGui.QMessageBox.question(MainWindow, "Close Application",
                 "Are you sure you would like to quit?",QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if choice == QtGui.QMessageBox.Yes:
+          #Sys.exit closes the program.
             sys.exit()
         else:
             pass
@@ -284,7 +280,6 @@ class Ui_MainWindow(object):
         #Fetching user from database
         c.execute("SELECT * FROM users WHERE username=:username AND password=:password ORDER BY username ASC",
                   {"username":self.username,"password":self.password})
-        
         data = c.fetchone()
 
         #None will be returned if there is no user with that username or password.
@@ -293,17 +288,25 @@ class Ui_MainWindow(object):
 
         #If the user is found.
         else:
+          #Current user will be the only variable in my entire program that is global. This is important to be global as it will
+          #be needed in almost every window. Other variables that will need to be passed from one window to another will be passed
+          #though parameters.
             global currentUser
             
             #Data[6] is the user type
             if data[6] == "Student":
+              #If the user is a student then they will have more information than the default user. This is the extra data 
+              #needs to be stored on a seperate table. This includes the students year group, achievement points and
+              #Behaviour points
                 c.execute("SELECT yeargroup,achievementpoints,behaviourpoints FROM student WHERE username=:username",{"username":self.username})
                 details = c.fetchone()
 
                 #Setting the user as a student class.
                 currentUser = Student(data[0],data[1],data[2],data[3],data[4],data[5],data[6],details[0],data[7],details[1],details[2])
             else:   
+               #If the user is not a student then save as a default User. 
                 currentUser = User(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
+         
             self.open_user()
 
     #Open user is the function that closes the login page and opens the welcome page
@@ -372,15 +375,19 @@ class Ui_WelcomeWindow(object):
         font.setUnderline(True)
         self.viewButton.setFont(font)
         self.viewButton.setLayoutDirection(QtCore.Qt.LeftToRight)
+        #This button will be shown differently to default buttons - as it will be blue underlined and have a 
+        #transparent background. This is why I have created a seperate CSS for this button. 
         self.viewButton.setStyleSheet(_fromUtf8("QPushButton{background: transparent;\n"
-"color: rgb(0, 0, 255);\n"
-"text-decoration: underline;\n"
-"border: 0px;}"))
+        "color: rgb(0, 0, 255);\n"
+        "text-decoration: underline;\n"
+        "border: 0px;}"))
         self.viewButton.setObjectName(_fromUtf8("viewButton"))
         self.viewButton.clicked.connect(self.view_homework)
 
 
-        ##TOP RESULTS
+        ###################### RESULTS #######################################
+        #Here will show the top 3 results of homework. Each result will be made up
+        #of a button, title and description. They will be combined into one class object.
 
         ## RESULT ONE
         
@@ -404,6 +411,7 @@ class Ui_WelcomeWindow(object):
         self.topDesc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.topDesc.setObjectName(_fromUtf8("topDesc"))
 
+        #WindowsButtons is another class. This will combine all of the objects.
         self.top1 = WindowButtons(self.topButton,self.topTitle,self.topDesc,"Homework")
 
 
@@ -518,7 +526,8 @@ class Ui_WelcomeWindow(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
 
        
-        
+        #Here I am adding everything to the menu bar at the top of the window
+        #Based on the user - will depend on what methods are shown
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
         self.menuClasses = QtGui.QMenu(self.menubar)
@@ -532,7 +541,9 @@ class Ui_WelcomeWindow(object):
             self.menuHomework = QtGui.QMenu(self.menubar)
             self.menuHomework.setObjectName(_fromUtf8("menuHomework"))
             self.menubar.addAction(self.menuHomework.menuAction())
-
+            
+            #Creating an action - View Homework - which will be shown on the dropdown menu
+            #from the menu bar
             self.viewHomework = QtGui.QAction(MainWindow)
             self.viewHomework.setObjectName(_fromUtf8("viewHomework"))
             self.viewHomework.setStatusTip("View my homework")
@@ -541,21 +552,27 @@ class Ui_WelcomeWindow(object):
 
 
             #Getting 3 most upcoming homeworks
+            #Today is the date today.
             today = datetime.datetime.today().strftime('%Y-%m-%d')
             data = []
+            
             if currentUser.type == "Student":
+              #Fetching all classes the student is in.
                 c.execute("SELECT classid FROM studentclass WHERE username = :username",
                       {"username":currentUser.username})
             else:
+              #Fetching all classes the teacher is in.
                 c.execute("SELECT id FROM classes WHERE teacher = :username",
                       {"username":currentUser.username})
             self.data = list(c.fetchall())
-
+            
+            #For every class fetched from the database - fetch all future homeworks
             for classid in self.data:
                 c.execute("SELECT * FROM homework WHERE classid = :classid AND duedate >= :date",{"classid":classid[0],"date":today})
                 temp = c.fetchall()
                 if temp != None:
                     data.extend(list(temp))
+            #Sorting data by date. Showing the newest date first.
             data.sort(key=lambda x: time.mktime(time.strptime(x[2],"%Y-%m-%d")))
             if data == None:
                 data = []
@@ -686,6 +703,8 @@ class Ui_WelcomeWindow(object):
             self.viewHomework.setText(_translate("MainWindow","View Homework",None))
             self.homeworkTitle.setText(_translate("MainWindow", "My Homework: ("+str(len(self.homeworks))+" Due Soon)", None))
             self.viewButton.setText(_translate("MainWindow", "Click to view more", None))
+            
+            #Updating text on each homework.
             if len(self.homeworks) >= 1:
                 if len(self.homeworks[0][3]) > 45:
                        self.homeworks[0][3]= self.homeworks[0][3][:42]+"..."
