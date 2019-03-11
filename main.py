@@ -329,8 +329,10 @@ class Ui_WelcomeWindow(object):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         if currentUser.type == "Admin":
             height = 185
-        else:
+        elif currentUser.type == "Student":
             height = 593
+        else:
+            height = 400
         MainWindow.resize(640, height)
         MainWindow.setStyleSheet(_fromUtf8("QMainWindow {\n"
         "background-color: qlineargradient(spread:pad, x1:0.494364, y1:0.806, x2:0.471, y2:0.142045, stop:0 rgba(17, 255, 56, 255), stop:1 rgba(255, 255, 255, 255));}\n"
@@ -602,6 +604,7 @@ class Ui_WelcomeWindow(object):
             self.addHomework.setStatusTip("Create a new homework")
             self.menuHomework.addAction(self.addHomework)
             self.addHomework.triggered.connect(self.create_homework)
+            self.menuUsers.addAction(self.viewUsers)
 
 
         if currentUser.type == "Admin":
@@ -699,6 +702,7 @@ class Ui_WelcomeWindow(object):
         self.achievementTitle.setText(_translate("MainWindow","Achievement\nPoints",None))
         
         if currentUser.type != "Admin":
+            self.viewClasses.setText(_translate("MainWindow", "View Classes", None))
             self.menuHomework.setTitle(_translate("MainWindow", "Homework", None))
             self.viewHomework.setText(_translate("MainWindow","View Homework",None))
             self.homeworkTitle.setText(_translate("MainWindow", "My Homework: ("+str(len(self.homeworks))+" Due Soon)", None))
@@ -732,12 +736,13 @@ class Ui_WelcomeWindow(object):
                 self.addSubject.setText(_translate("MainWindow","Add Subject",None))
                 self.addTeacher.setText(_translate("MainWindow","Add Teacher",None))
                 self.addStudent.setText(_translate("MainWindow","Add Student",None))
-                self.viewUsers.setText(_translate("MainWindow","View Users",None))
+
                 self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
             else:
                 self.addHomework.setText(_translate("MainWindow","Add Homework",None))
             self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
             self.menuUsers.setTitle(_translate("MainWindow", "Users", None))
+            self.viewUsers.setText(_translate("MainWindow","View Users",None))
         else:
             self.achievementNumber.setText(_translate("MainWindow",str(currentUser.achievementpoints),None))
             self.behaviourNumber.setText(_translate("MainWindow",str(currentUser.behaviourpoints),None))
@@ -836,6 +841,7 @@ class Ui_WelcomeWindow(object):
 #This class allows them to be treated as a whole.
 class WindowButtons():
     def __init__(self,button,title,desc,typeOfBox):
+        self.id = "NULL"
         self.button = button
         self.title = title
         self.desc = desc
@@ -1170,13 +1176,14 @@ class Ui_CreateClassWindow(object):
             self.createBtn.clicked.connect(self.save_changes)
             self.subjectCombo.setEnabled(False)
 
-        if currentUser.type == "Student" or currentUser.type == "Admin":
+        if currentUser.type == "Student" or currentUser.type == "Teacher":
             self.teacherCombo.setEnabled(False)
             self.yearCombo.setEnabled(False)
             self.lesson1Box.setEnabled(False)
             self.lesson2Box.setEnabled(False)
             self.lesson3Box.setEnabled(False)
             self.lesson4Box.setEnabled(False)
+            self.subjectCombo.setEnabled(False)
 
 
         
@@ -1256,6 +1263,8 @@ class Ui_CreateClassWindow(object):
     def get_details(self):
         self.currentClass.subject = self.subjectCombo.currentText()
         self.currentClass.teacher = self.teacherCombo.currentText()
+        print(self.currentClass.teacher[self.currentClass.teacher.find("(")+1:self.currentClass.teacher.find(")")])
+        print(self.currentClass.teacher.find("(")+1,self.currentClass.teacher.find(")"))
         self.currentClass.teacher = self.currentClass.teacher[self.currentClass.teacher.find("(")+1:self.currentClass.teacher.find(")")]
         self.currentClass.yearGroup = self.yearCombo.currentText()[-2:]
         self.currentClass.lesson1 = self.lesson1Box.currentText()
@@ -1273,9 +1282,12 @@ class Ui_CreateClassWindow(object):
     #Save functions
     def save_(self):
         self.get_details()
-        c.execute("UPDATE classes SET teacher = :teacher AND yeargroup = :yearGroup AND lesson1 = :lesson1 AND lesson2 =:lesson2"
-                  " AND lesson3 =:lesson3 AND lesson4 = :lesson4 WHERE id = :id",
-                  {"teacher":self.currentClass.teacher,"yearGroup":self.currentClass.yearGroup,"id":self.currentClass.id})
+        print(self.currentClass.id,self.currentClass.lesson1,self.currentClass.teacher)
+        c.execute("UPDATE classes SET teacher = :teacher,yeargroup = :yearGroup, lesson1 = :lesson1, lesson2 =:lesson2,"
+                  "lesson3 =:lesson3, lesson4 = :lesson4 WHERE id = :id",
+                  {"teacher":self.currentClass.teacher,"yearGroup":self.currentClass.yearGroup,"id":self.currentClass.id,
+                   "lesson1":self.currentClass.lesson1,"lesson2":self.currentClass.lesson2,"lesson3":self.currentClass.lesson3,
+                   "lesson4":self.currentClass.lesson4})
         conn.commit()
         self.saved_window()
 
@@ -1635,6 +1647,17 @@ class Ui_EditUserWindow(object):
             
         ##############################################################
 
+        if currentUser.type == "Teacher":
+            self.firstEdit.setEnabled(False)
+            self.lastEdit.setEnabled(False)
+            self.emailEdit.setEnabled(False)
+            self.dateEdit.setEnabled(False)
+            self.yearGroup.setEnabled(False)
+            self.selectClasses.hide()
+            self.resetPassword.hide()
+            self.editBtn.hide()
+            self.uploadPic.hide()
+
 
         #Menu and status bars
         EditUserWindow.setCentralWidget(self.centralwidget)
@@ -1757,7 +1780,7 @@ class Ui_EditUserWindow(object):
                   {"first":self.first,"last":self.last,"dob":self.dob,"email":self.email,"pic": self.user.pic,"username":self.user.username})
         if self.user.type == "Student":
             self.user.yeargroup = self.yearGroup.currentText()
-            c.execute("UPDATE student SET yeargroup = :yeargroup WHERE username = :username",{"yeargroup":self.year,"username":self.user.username})
+            c.execute("UPDATE student SET yeargroup = :yeargroup WHERE username = :username",{"yeargroup":self.user.yeargroup,"username":self.user.username})
         conn.commit()
         self.saved_window()
 
@@ -1815,7 +1838,7 @@ class Ui_EditUserWindow(object):
         if self.type == "Student":
             self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,"List")
         else:
-            self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,"N/A","List")
+            self.selectClassUi.setupUi(self.selectClass,self.user.username,self.user.type,"List")
         self.selectClass.show()
 
     def behaviour_window(self):
@@ -2050,7 +2073,7 @@ class Ui_SearchUsers(object):
         self.resultRectangle.setGeometry(QtCore.QRect(20, 267, 931, 71))
         self.resultRectangle.setAutoFillBackground(False)
         self.resultRectangle.setStyleSheet(_fromUtf8("border: 1px solid black;\n"
-"background-color: rgb(255, 255, 255);"))
+        "background-color: rgb(255, 255, 255);"))
         self.resultRectangle.setText(_fromUtf8(""))
         self.resultRectangle.setObjectName(_fromUtf8("resultRectangle"))
 
@@ -2779,9 +2802,12 @@ class Ui_ClassListWindow(object):
         if self.typeOfUser == "Student":
             c.execute("SELECT classid FROM studentclass WHERE username = :username",{"username":self.username})
             self.allClasses = list(c.fetchall())
+            print(self.allClasses)
         else:
             c.execute("SELECT id FROM classes WHERE teacher = :username",{"username":self.username})
             self.allClasses = list(c.fetchall())
+            print(self.allClasses,"2")
+
             
         if self.typeOfSearch == "Search":
             self.titleLabel.setGeometry(QtCore.QRect(0, 0, 641, 91))
@@ -3087,7 +3113,7 @@ class Ui_ClassListWindow(object):
 
         else:
             c.execute("SELECT * FROM classes WHERE teacher = :username",{"username":self.username})
-            data = c.fetchall()
+            self.data = c.fetchall()
 
 
     def class_button(self):
@@ -3179,7 +3205,7 @@ class UsersClass():
         self.classui = Ui_CreateClassWindow()
         c.execute("SELECT * FROM classes WHERE id = :id",{"id":self.id})
         data = c.fetchone()
-        self.classui.setupUi(self.classPage,Class(data[0],data[1],data[2],data[3],data[4],data[5],data[6]))
+        self.classui.setupUi(self.classPage,Class(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]))
         self.classPage.show()
 
     def add_student(self):
@@ -4117,7 +4143,7 @@ class Ui_PointsWindow(object):
         self.saved_window()
         self.window.hide()
 
-        def saved_window(self):
+    def saved_window(self):
         QtGui.QMessageBox.question(self.window,"Saved","Save Successful",
                                    QtGui.QMessageBox.Ok)
 #Use this as MainWindow for the close event popup window

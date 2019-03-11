@@ -40,11 +40,15 @@ class Student(User):
 class Class:
     """A sample class"""
 
-    def __init__(self,yearGroup,teacher,subject,id):
+    def __init__(self,yearGroup,teacher,subject,id,lesson1,lesson2,lesson3,lesson4):
         self.yearGroup = yearGroup
         self.teacher = teacher
         self.subject = subject
         self.id = id
+        self.lesson1 = lesson1
+        self.lesson2 = lesson2
+        self.lesson3 = lesson3
+        self.lesson4 = lesson4
 
 
 class Subject:
