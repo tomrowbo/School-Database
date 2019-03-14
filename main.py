@@ -4210,9 +4210,10 @@ def hashing(password):
     hashed = hashlib.sha512(password.encode('utf-8'))
     return hashed.hexdigest()          
         
-            
+#This is so that if main.py is imported then the program would not actually be ran.           
 if __name__ == "__main__":
     import sys
+    #Creating the window
     app = QtGui.QApplication(sys.argv)
     MainWindow = QtGui.QMainWindow()
     ui = Ui_MainWindow()
