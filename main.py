@@ -802,7 +802,7 @@ class Ui_WelcomeWindow(object):
     def create_student(self):
         self.createStudentPage = EditWindow()
         self.createStudentUi = Ui_EditUserWindow()
-        self.createStudentUi.setupUi(self.createStudentPage,"Student",Student("NULL","NULL","NULL","NULL","NULL","NULL","Student","NULL","NULL"))
+        self.createStudentUi.setupUi(self.createStudentPage,"Student",Student("NULL","NULL","NULL","NULL","NULL","NULL","Student","NULL","NULL","NULL","NULL"))
         self.createStudentPage.show()
 
     def create_subject(self):
