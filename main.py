@@ -811,7 +811,7 @@ class Ui_WelcomeWindow(object):
     def create_homework(self):
         self.homeworkPage = EditWindow()
         self.homeworkui = Ui_HomeWorkWindow()
-        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","01/01/2001","NULL","NULL"))
+        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","2001/01/01","NULL","NULL"))
         self.homeworkPage.show()
 
     def view_homework(self):
@@ -1663,8 +1663,10 @@ class Ui_EditUserWindow(object):
             self.lastEdit.setEnabled(False)
             self.emailEdit.setEnabled(False)
             self.dateEdit.setEnabled(False)
-            self.yearGroup.setEnabled(False)
-            self.selectClasses.hide()
+            if self.user.type == "Student":
+                self.yearGroup.setEnabled(False)
+            if self.user.type != "Admin":
+                self.selectClasses.hide()
             self.resetPassword.hide()
             self.editBtn.hide()
             self.uploadPic.hide()
@@ -3334,6 +3336,7 @@ class Ui_HomeWorkWindow(object):
         self.dateEdit.setMinimumDate(QtCore.QDate.currentDate())
         self.dateEdit.setCalendarPopup(True)
         self.dateEdit.calendarWidget().installEventFilter(MainWindow)
+
         date = QtCore.QDate(int(self.homework.dueyear),int(self.homework.duemonth),int(self.homework.dueday))
         self.dateEdit.setDate(date)
         
@@ -3931,7 +3934,7 @@ class Ui_ViewHomeworkWindow(object):
         #Open create homework window
         self.homeworkPage = EditWindow()
         self.homeworkui = Ui_HomeWorkWindow()
-        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","01/01/2001","NULL","NULL"))
+        self.homeworkui.setupUi(self.homeworkPage,Homework("NULL","NULL","2001/01/01","NULL","NULL"))
         self.homeworkPage.show()
 
     def show_homework(self,text):
