@@ -643,8 +643,15 @@ class Ui_WelcomeWindow(object):
             #Add Student
             self.addStudent = QtGui.QAction(MainWindow)
             self.addStudent.setObjectName(_fromUtf8("addStudent"))
-            self.addStudent.setStatusTip("Create a new student account")
+            self.addStudent.setStatusTip("Create a new Student account")
             self.addStudent.triggered.connect(self.create_student)
+
+            #View A List Of All Classes
+            self.viewClasses = QtGui.QAction(MainWindow)
+            self.viewClasses.setObjectName(_fromUtf8("viewClasses"))
+            self.viewClasses.setStatusTip("View all classes")
+            self.viewClasses.triggered.connect(self.view_classes)
+            self.menuClasses.addAction(self.viewClasses)
             
             self.menuSubjects.addAction(self.addSubject)
             self.menuUsers.addAction(self.addAdmin)
@@ -652,9 +659,11 @@ class Ui_WelcomeWindow(object):
             self.menuUsers.addAction(self.addStudent)
             self.menuUsers.addAction(self.viewUsers)
             self.menuClasses.addAction(self.addClass)
+            self.menuClasses.addAction(self.viewClasses)
             self.menubar.addAction(self.menuSubjects.menuAction())
 
         else:
+            #View A List Of **THE USERS** Classes.
             self.viewClasses = QtGui.QAction(MainWindow)
             self.viewClasses.setObjectName(_fromUtf8("viewClasses"))
             self.viewClasses.setStatusTip("View your classes")
@@ -747,8 +756,8 @@ class Ui_WelcomeWindow(object):
                 self.addSubject.setText(_translate("MainWindow","Add Subject",None))
                 self.addTeacher.setText(_translate("MainWindow","Add Teacher",None))
                 self.addStudent.setText(_translate("MainWindow","Add Student",None))
-
                 self.addAdmin.setText(_translate("MainWindow","Add Admin",None))
+                self.viewClasses.setText(_translate("MainWindow","View Classes",None))
             else:
                 self.addHomework.setText(_translate("MainWindow","Add Homework",None))
             self.menuSubjects.setTitle(_translate("MainWindow", "Subjects", None))
@@ -768,6 +777,13 @@ class Ui_WelcomeWindow(object):
         self.viewUserUi = Ui_SearchUsers()
         self.viewUserUi.setupUi(self.viewUserPage,"Search",None)
         self.viewUserPage.show()
+
+    #View All Classes    
+    def view_classes(self):
+        self.showClassesPage = EditWindow()
+        self.showClassesUi = Ui_ClassListWindow()
+        self.showClassesUi.setupUi(self.showClassesPage,"NULL","Teacher","Search")
+        self.showClassesPage.show()  
 
 
     def create_admin(self):
@@ -2064,7 +2080,7 @@ class Ui_SearchUsers(object):
         self.profilePic = QtGui.QLabel(self.centralwidget)
         self.profilePic.setGeometry(QtCore.QRect(60, 270, 63, 63))
         self.profilePic.setText(_fromUtf8(""))
-        self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic.setScaledContents(True)
         self.profilePic.setObjectName(_fromUtf8("profilePic"))
 
@@ -2111,7 +2127,7 @@ class Ui_SearchUsers(object):
         self.profilePic_2 = QtGui.QLabel(self.centralwidget)
         self.profilePic_2.setGeometry(QtCore.QRect(60, 345, 63, 63))
         self.profilePic_2.setText(_fromUtf8(""))
-        self.profilePic_2.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic_2.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic_2.setScaledContents(True)
         self.profilePic_2.setObjectName(_fromUtf8("profilePic_2"))
         
@@ -2169,7 +2185,7 @@ class Ui_SearchUsers(object):
         self.profilePic_3 = QtGui.QLabel(self.centralwidget)
         self.profilePic_3.setGeometry(QtCore.QRect(60, 420, 63, 63))
         self.profilePic_3.setText(_fromUtf8(""))
-        self.profilePic_3.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic_3.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic_3.setScaledContents(True)
         self.profilePic_3.setObjectName(_fromUtf8("profilePic_3"))
 
@@ -2193,7 +2209,7 @@ class Ui_SearchUsers(object):
         self.profilePic_4 = QtGui.QLabel(self.centralwidget)
         self.profilePic_4.setGeometry(QtCore.QRect(60, 495, 63, 63))
         self.profilePic_4.setText(_fromUtf8(""))
-        self.profilePic_4.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic_4.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic_4.setScaledContents(True)
         self.profilePic_4.setObjectName(_fromUtf8("profilePic_4"))
         
@@ -2229,7 +2245,7 @@ class Ui_SearchUsers(object):
         self.profilePic_5 = QtGui.QLabel(self.centralwidget)
         self.profilePic_5.setGeometry(QtCore.QRect(60, 570, 63, 63))
         self.profilePic_5.setText(_fromUtf8(""))
-        self.profilePic_5.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic_5.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic_5.setScaledContents(True)
         self.profilePic_5.setObjectName(_fromUtf8("profilePic_5"))
         
@@ -2271,7 +2287,7 @@ class Ui_SearchUsers(object):
         self.profilePic_6 = QtGui.QLabel(self.centralwidget)
         self.profilePic_6.setGeometry(QtCore.QRect(60, 645, 63, 63))
         self.profilePic_6.setText(_fromUtf8(""))
-        self.profilePic_6.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic_6.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic_6.setScaledContents(True)
         self.profilePic_6.setObjectName(_fromUtf8("profilePic_6"))
         
@@ -2301,7 +2317,7 @@ class Ui_SearchUsers(object):
         self.profilePic_7 = QtGui.QLabel(self.centralwidget)
         self.profilePic_7.setGeometry(QtCore.QRect(60, 720, 63, 63))
         self.profilePic_7.setText(_fromUtf8(""))
-        self.profilePic_7.setPixmap(QtGui.QPixmap(_fromUtf8("E:/School Database PyQt/placeholder.png")))
+        self.profilePic_7.setPixmap(QtGui.QPixmap(_fromUtf8(path+"/placeholder.png")))
         self.profilePic_7.setScaledContents(True)
         self.profilePic_7.setObjectName(_fromUtf8("profilePic_7"))
         
@@ -2794,6 +2810,7 @@ class SearchBox():
 
 
 class Ui_ClassListWindow(object):
+
     def setupUi(self, ClassListWindow,username,typeOfUser,typeOfSearch):
 
         #Year Group can be left as NULL for instances not needed.
@@ -2858,7 +2875,13 @@ class Ui_ClassListWindow(object):
             self.profilePic = QtGui.QLabel(self.centralwidget)
             self.profilePic.setGeometry(QtCore.QRect(30, 20, 126, 126))
             self.profilePic.setText(_fromUtf8(""))
-            self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
+            #Fetching picture of user and setting it as the profile pic
+            c.execute("SELECT pic FROM users WHERE username = :username",{"username":self.username})
+            pic = c.fetchone()
+            if os.path.isfile(path + pic[0]):
+                self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8(path + pic[0])))
+            else:
+                self.profilePic.setPixmap(QtGui.QPixmap(_fromUtf8("placeholder.png")))
             self.profilePic.setScaledContents(True)
             self.profilePic.setObjectName(_fromUtf8("profilePic"))
 
@@ -3151,7 +3174,7 @@ class Ui_ClassListWindow(object):
     def new_class(self):
         self.classPage = EditWindow()
         self.classui = Ui_CreateClassWindow()
-        self.classui.setupUi(self.classPage,Class("NULL",self.username,"NULL","NULL"))
+        self.classui.setupUi(self.classPage,Class("NULL",self.username,"NULL","NULL","NULL","NULL","NULL","NULL"))
         self.classPage.show()
 
     def refresh_page(self):
@@ -3179,27 +3202,23 @@ class UsersClass():
         self.subject = subject
         self.main.setText(_translate("ClassListWindow",id + " - " + subject,None))
         #Depending on the context - the buttons with do different things.
-        if self.type == "List":
-            if self.typeOfUser == "Teacher":
-                self.remove.setText(_translate("ClassListWindow","Edit",None))
-                self.signal = "Edit"
-            else:
-                self.signal = "Remove"
-                self.remove.setText(_translate("ClassListWindow","Remove",None))
-             
+        if self.typeOfUser == "Teacher":
+            self.remove.setText(_translate("ClassListWindow","Edit",None))
+            self.signal = "Edit"
+            
+        elif self.type == "List":
+            self.signal = "Remove"
+            self.remove.setText(_translate("ClassListWindow","Remove",None))
+            
         else:
-
-            if self.typeOfUser == "Student":
-                self.signal = "Add"
-                self.remove.setText(_translate("ClassListWindow","Add",None))
-                for i in range(len(self.allClasses)):
-                    if self.id == self.allClasses[i][0]:
-                        self.remove.setText(_translate("ClassListWindow","Remove",None))
-                        self.signal = "Remove"
-                        break
-            else:
-                self.signal = "Remove"
-                self.remove.setText(_translate("ClassListWindow","Remove",None))
+            self.signal = "Add"
+            self.remove.setText(_translate("ClassListWindow","Add",None))
+            
+            for i in range(len(self.allClasses)):
+                if self.id == self.allClasses[i][0]:
+                    self.remove.setText(_translate("ClassListWindow","Remove",None))
+                    self.signal = "Remove"
+                    break
 
 
     def remove_button(self):
